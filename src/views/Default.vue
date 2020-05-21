@@ -66,6 +66,8 @@
   dayjs.extend(relativeTime);
   dayjs.locale('de')
 
+  import USER_SETTINGS from '../../.env.json'
+
   import RefreshButton from '../components/RefreshButton'
   import WeekList from '../components/WeekList'
   import BigHeadline from '../components/BigHeadline'
@@ -111,11 +113,10 @@
             'project_ids': 155439157
           })
 
-          const API_KEY = 'OWI5NjhhYmU3MmQyOTViZjdjMmRjODgyZjA2MjEzOGU6YXBpX3Rva2Vu'
           const resultApi = await fetch(url, {
             method: 'GET',
             headers: new Headers({
-              'Authorization': `Basic ${API_KEY}`
+              'Authorization': `Basic ${USER_SETTINGS.API_KEY}`
             })
           })
 
@@ -131,6 +132,7 @@
             throw new Error('Something is wrong with the API response')
 
 
+          
           const settings = {
             businessDays: [
               { dayId: 1, hoursToWork: 8 },
