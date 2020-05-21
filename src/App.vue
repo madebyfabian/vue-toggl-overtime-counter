@@ -20,6 +20,7 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     // user-select: none;
+    box-sizing: border-box;
   }
 
   @supports (font-variation-settings: normal) {
@@ -41,6 +42,7 @@
     font-weight: bold;
     font-size: 48px;
     line-height: 64px;
+    min-height: 64px;
     margin: 0 0 40px;
     font-variant-numeric: diagonal-fractions;
   }

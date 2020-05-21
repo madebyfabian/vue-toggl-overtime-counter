@@ -1,14 +1,17 @@
 <template>
   <div class="default-view">
     <RefreshButton 
-      class="refresh-button-instance" 
-      @click.native="isLoading = !isLoading" 
+      class="refresh-button" 
+      @click.native="fetchApiResponse" 
       :isLoading="isLoading"
     />
     <h2>Hej, Fabian! Du hast diese Woche</h2>
-    <h1>{{ renderedHeadlineString }}</h1>
-
+    <BigHeadline :weekListData="weekListData" />
     <WeekList class="week-list" :weekListData="weekListData" />
+    <div class="bottom-banner">
+      Du hast insgesamt <strong>13 Überstunden</strong> im Jahr 2020! 🤓
+      <router-link class="bottom-banner__link" to="/details">Ansehen →</router-link>
+    </div>
   </div>
 </template>
 
@@ -16,21 +19,43 @@
   .default-view {
     padding: 80px 24px 24px;
     text-align: center;
+    min-height: 480px;
+    position: relative;
 
-    &:hover .refresh-button-instance {
+    &:hover .refresh-button {
       opacity: 1;
     }
-  }
 
-  .refresh-button-instance {
-    position: fixed;
-    top: 24px;
-    left: 24px;
-    opacity: 0;
-  }
+    .refresh-button {
+      position: fixed;
+      top: 24px;
+      left: 24px;
+      opacity: 0;
+    }
 
-  .week-list {
-    margin-bottom: 56px;
+    .week-list {
+      margin-bottom: 56px;
+    }
+
+    .bottom-banner {
+      font-size: 18px;
+      line-height: 24px;
+      color: rgba(#fff, 0.5);
+      padding: 24px 16px;
+      border-radius: 16px;
+      background: #2F3437;
+
+      &__link {
+        color: #2EAADC;
+        padding-left: 12px;
+        text-decoration: none;
+        transition: opacity 150ms ease;
+
+        &:hover {
+          opacity: .75;
+        }
+      }
+    }
   }
 </style>
 
@@ -43,6 +68,7 @@
 
   import RefreshButton from '../components/RefreshButton'
   import WeekList from '../components/WeekList'
+  import BigHeadline from '../components/BigHeadline'
 
   // @ is an alias to /src
   export default {
@@ -50,11 +76,12 @@
 
     components: {
       RefreshButton,
-      WeekList
+      WeekList,
+      BigHeadline
     },
 
     data: () => ({
-      isLoading: false,
+      isLoading: true,
       weekListData: null
     }),
 
@@ -70,125 +97,89 @@
 
       roundHalf(num) {
         return Math.round(num * 2) / 2
-      }
-    },
+      },
+
+      async fetchApiResponse() {
+        try {
+          this.isLoading = true
+
+          // Call TOGGL API to get the entries for this week.
+          const url = this.buildAPIUrl('weekly', {
+            'user_agent': 'hello@madebyfabian.com',
+            'workspace_id': 2123160,
+            'since': '2020-05-18',
+            'project_ids': 155439157
+          })
+
+          const API_KEY = 'OWI5NjhhYmU3MmQyOTViZjdjMmRjODgyZjA2MjEzOGU6YXBpX3Rva2Vu'
+          const resultApi = await fetch(url, {
+            method: 'GET',
+            headers: new Headers({
+              'Authorization': `Basic ${API_KEY}`
+            })
+          })
+
+          if (!resultApi)
+            throw new Error('Error with the API request')
+
+          const resultJSON = await resultApi.json()
+          if (!resultJSON)
+            throw new Error('Error parsing JSON from API')
+
+          const result = resultJSON?.week_totals
+          if (!result)
+            throw new Error('Something is wrong with the API response')
 
 
-    computed: {
-      renderedHeadlineString() {
-        let num = this.weekListData?.weekStatus
-        if (num === 0)
-          return `Keine Überstunden 🎉`
+          const settings = {
+            businessDays: [
+              { dayId: 1, hoursToWork: 8 },
+              { dayId: 2, hoursToWork: 8 },
+              { dayId: 3, hoursToWork: 8 },
+              { dayId: 4, hoursToWork: 8 },
+              { dayId: 5, hoursToWork: 8 },
+              { dayId: 6, hoursToWork: null },
+              { dayId: 7, hoursToWork: null },
+            ]
+          }
 
-        if (!num)
-          return '...'
 
-        let emoji = (num > 0) ? '🤓' : '🙈',
-            str = ''
+          // Now, let's look what weekday it's currently.
+          const currentWeekdayID = dayjs().day()
+          
+          
+          const weekdaysToLoopThrough = settings.businessDays.filter(entry => !!entry.hoursToWork)
+          let weekStatus = 0
 
-        if (num > 0) {
-          // Positive value
-          if (num <= 1)
-            str = 'Überstunde'
-          else
-            str = 'Überstunden'
-        } else {
-          // Negative value
-          if (num >= -1)
-            str = 'Minusstunde'
-          else
-            str = 'Minusstunden'
+          // Loop through a regular business-week
+          weekdaysToLoopThrough.forEach((weekday, i) => {
+            weekday.status = null
+            weekday.label = dayjs().day(weekday.dayId).format('dd')
+            weekday.isToday = weekday.dayId === currentWeekdayID
+
+            const realWorkedHours = this.roundHalf(result[i] / 1000 / 60 / 60)
+
+            if (weekday.dayId >= currentWeekdayID)
+              return
+
+            weekday.status = (weekday.hoursToWork - realWorkedHours) * -1
+            weekStatus += weekday.status
+          })
+
+          this.weekListData = {
+            weekStatus: this.roundHalf(weekStatus),
+            details: weekdaysToLoopThrough
+          }
+
+          this.isLoading = false
+        } catch (error) {
+          console.log(error.message)
         }
-
-        num = Math.abs(num)
-
-        const renderedNum = num % 1 === .5 ? (num < 1 ? '1/2' : `${num-.5} 1/2`) : num.toLocaleString()
-
-        return `${renderedNum} ${str} ${emoji}`
       }
     },
-
 
     async created() {
-      try {
-        // ONLY FOR DEVELOPMENT
-        // const result = [26543000,28023000,25228000,null,null,null,null,79794000]
-        
-        // --------
-        // Call TOGGL api to get the entries for this week.
-        const url = this.buildAPIUrl('weekly', {
-          'user_agent': 'hello@madebyfabian.com',
-          'workspace_id': 2123160,
-          'since': '2020-05-18',
-          'project_ids': 155439157
-        })
-
-        const API_KEY = 'OWI5NjhhYmU3MmQyOTViZjdjMmRjODgyZjA2MjEzOGU6YXBpX3Rva2Vu'
-        const resultApi = await fetch(url, {
-          method: 'GET',
-          headers: new Headers({
-            'Authorization': `Basic ${API_KEY}`
-          })
-        })
-
-        if (!resultApi)
-          throw new Error('Error with the API request')
-
-        const resultJSON = await resultApi.json()
-        if (!resultJSON)
-          throw new Error('Error parsing JSON from API')
-
-        const result = resultJSON?.week_totals
-        if (!result)
-          throw new Error('Something is wrong with the API response')
-        // --------
-
-
-        const settings = {
-          businessDays: [
-            { dayId: 1, hoursToWork: 8 },
-            { dayId: 2, hoursToWork: 8 },
-            { dayId: 3, hoursToWork: 8 },
-            { dayId: 4, hoursToWork: 8 },
-            { dayId: 5, hoursToWork: 8 },
-            { dayId: 6, hoursToWork: null },
-            { dayId: 7, hoursToWork: null },
-          ]
-        }
-
-
-        // Now, let's look what weekday it's currently.
-        const currentWeekdayID = dayjs().day()
-        
-        
-        const weekdaysToLoopThrough = settings.businessDays.filter(entry => !!entry.hoursToWork)
-        let weekStatus = 0
-
-        // Loop through a regular business-week
-        weekdaysToLoopThrough.forEach((weekday, i) => {
-          weekday.status = null
-          weekday.label = dayjs().day(weekday.dayId).format('dd')
-          weekday.isToday = weekday.dayId === currentWeekdayID
-
-          const realWorkedHours = this.roundHalf(result[i] / 1000 / 60 / 60)
-
-          if (weekday.dayId >= currentWeekdayID)
-            return
-
-          weekday.status = (weekday.hoursToWork - realWorkedHours) * -1
-          weekStatus += weekday.status
-        })
-
-        this.weekListData = {
-          weekStatus: this.roundHalf(weekStatus),
-          details: weekdaysToLoopThrough
-        }
-
-        console.log(this.weekListData.weekStatus)
-
-      } catch (error) {
-        console.log(error.message)
-      }
+      await this.fetchApiResponse()
     }
   }
 </script>
