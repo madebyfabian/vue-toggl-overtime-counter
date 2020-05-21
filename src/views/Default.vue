@@ -8,10 +8,10 @@
     <h2>Hej, Fabian! Du hast diese Woche</h2>
     <BigHeadline :weekListData="weekListData" />
     <WeekList class="week-list" :weekListData="weekListData" />
-    <div class="bottom-banner">
+    <!-- <div class="bottom-banner">
       Du hast insgesamt <strong>13 Überstunden</strong> im Jahr 2020! 🤓
       <router-link class="bottom-banner__link" to="/details">Ansehen →</router-link>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -116,7 +116,7 @@
           const resultApi = await fetch(url, {
             method: 'GET',
             headers: new Headers({
-              'Authorization': `Basic ${USER_SETTINGS.API_KEY}`
+              'Authorization': `Basic ${btoa(`${USER_SETTINGS.API_KEY}:api_token`)}`
             })
           })
 
