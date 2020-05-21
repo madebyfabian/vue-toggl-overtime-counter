@@ -5,13 +5,7 @@
 npm install
 ```
 
-then create a ``.env.json`` file in the project's root folder. 
-Add the following content to it:
-```
-{
-  "API_KEY": "YOUR_TOGGL_API_KEY"
-}
-```
+Be sure to activate an environment variable named VUE_APP_API_KEY holding the Toggl API key.
 
 ### Compiles and hot-reloads for development
 ```

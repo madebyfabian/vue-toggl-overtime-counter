@@ -66,8 +66,6 @@
   dayjs.extend(relativeTime);
   dayjs.locale('de')
 
-  // import USER_SETTINGS from '../../.env.json'
-
   import RefreshButton from '../components/RefreshButton'
   import WeekList from '../components/WeekList'
   import BigHeadline from '../components/BigHeadline'
@@ -100,81 +98,80 @@
       roundHalf(num) {
         return Math.round(num * 2) / 2
       },
- 
+
       async fetchApiResponse() {
         try {
-          console.log(process.env)
-          // this.isLoading = true
+          this.isLoading = true
 
-          // // Call TOGGL API to get the entries for this week.
-          // const url = this.buildAPIUrl('weekly', {
-          //   'user_agent': 'hello@madebyfabian.com',
-          //   'workspace_id': 2123160,
-          //   'since': '2020-05-18',
-          //   'project_ids': 155439157
-          // })
+          // Call TOGGL API to get the entries for this week.
+          const url = this.buildAPIUrl('weekly', {
+            'user_agent': 'hello@madebyfabian.com',
+            'workspace_id': 2123160,
+            'since': '2020-05-18',
+            'project_ids': 155439157
+          })
 
-          // const resultApi = await fetch(url, {
-          //   method: 'GET',
-          //   headers: new Headers({
-          //     'Authorization': `Basic ${btoa(`${USER_SETTINGS.API_KEY}:api_token`)}`
-          //   })
-          // })
+          const resultApi = await fetch(url, {
+            method: 'GET',
+            headers: new Headers({
+              'Authorization': `Basic ${btoa(`${process.env.VUE_APP_API_KEY}:api_token`)}`
+            })
+          })
 
-          // if (!resultApi)
-          //   throw new Error('Error with the API request')
+          if (!resultApi)
+            throw new Error('Error with the API request')
 
-          // const resultJSON = await resultApi.json()
-          // if (!resultJSON)
-          //   throw new Error('Error parsing JSON from API')
+          const resultJSON = await resultApi.json()
+          if (!resultJSON)
+            throw new Error('Error parsing JSON from API')
 
-          // const result = resultJSON?.week_totals
-          // if (!result)
-          //   throw new Error('Something is wrong with the API response')
+          const result = resultJSON?.week_totals
+          if (!result)
+            throw new Error('Something is wrong with the API response')
 
 
           
-          // const settings = {
-          //   businessDays: [
-          //     { dayId: 1, hoursToWork: 8 },
-          //     { dayId: 2, hoursToWork: 8 },
-          //     { dayId: 3, hoursToWork: 8 },
-          //     { dayId: 4, hoursToWork: 8 },
-          //     { dayId: 5, hoursToWork: 8 },
-          //     { dayId: 6, hoursToWork: null },
-          //     { dayId: 7, hoursToWork: null },
-          //   ]
-          // }
+          const settings = {
+            businessDays: [
+              { dayId: 1, hoursToWork: 8 },
+              { dayId: 2, hoursToWork: 8 },
+              { dayId: 3, hoursToWork: 8 },
+              { dayId: 4, hoursToWork: 8 },
+              { dayId: 5, hoursToWork: 8 },
+              { dayId: 6, hoursToWork: null },
+              { dayId: 7, hoursToWork: null },
+            ]
+          }
 
 
-          // // Now, let's look what weekday it's currently.
-          // const currentWeekdayID = dayjs().day()
+          // Now, let's look what weekday it's currently.
+          const currentWeekdayID = dayjs().day()
           
           
-          // const weekdaysToLoopThrough = settings.businessDays.filter(entry => !!entry.hoursToWork)
-          // let weekStatus = 0
+          const weekdaysToLoopThrough = settings.businessDays.filter(entry => !!entry.hoursToWork)
+          let weekStatus = 0
 
-          // // Loop through a regular business-week
-          // weekdaysToLoopThrough.forEach((weekday, i) => {
-          //   weekday.status = null
-          //   weekday.label = dayjs().day(weekday.dayId).format('dd')
-          //   weekday.isToday = weekday.dayId === currentWeekdayID
+          // Loop through a regular business-week
+          weekdaysToLoopThrough.forEach((weekday, i) => {
+            weekday.status = null
+            weekday.label = dayjs().day(weekday.dayId).format('dd')
+            weekday.isToday = weekday.dayId === currentWeekdayID
 
-          //   const realWorkedHours = this.roundHalf(result[i] / 1000 / 60 / 60)
+            const realWorkedHours = this.roundHalf(result[i] / 1000 / 60 / 60)
 
-          //   if (weekday.dayId >= currentWeekdayID)
-          //     return
+            if (weekday.dayId >= currentWeekdayID)
+              return
 
-          //   weekday.status = (weekday.hoursToWork - realWorkedHours) * -1
-          //   weekStatus += weekday.status
-          // })
+            weekday.status = (weekday.hoursToWork - realWorkedHours) * -1
+            weekStatus += weekday.status
+          })
 
-          // this.weekListData = {
-          //   weekStatus: this.roundHalf(weekStatus),
-          //   details: weekdaysToLoopThrough
-          // }
+          this.weekListData = {
+            weekStatus: this.roundHalf(weekStatus),
+            details: weekdaysToLoopThrough
+          }
 
-          // this.isLoading = false
+          this.isLoading = false
         } catch (error) {
           console.log(error.message)
         }
