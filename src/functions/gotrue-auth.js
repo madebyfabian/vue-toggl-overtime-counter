@@ -5,6 +5,6 @@ const isLocal = document.location.host.split(':').shift() === 'localhost'
 
 export default new GoTrue({
   APIUrl: "https://frosty-liskov-a5f4a1.netlify.app/.netlify/identity",
-  // audience: "",
-  setCookie: !isLocal
+  audience: "",
+  setCookie: true
 })

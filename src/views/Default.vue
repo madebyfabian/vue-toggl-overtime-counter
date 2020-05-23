@@ -91,7 +91,21 @@
     }),
 
     async created() {
-      console.log('Current user', auth.currentUser())
+      const user = auth.currentUser()
+      console.log('Current user', user)
+
+      if (user) {
+        // Update
+        user.update({
+          user_metadata: {
+            haha: true
+          }
+        }).then(response => {
+          console.log(response)
+        }).catch(error => {
+          console.error(error)
+        })
+      }
 
       await this.fetchApiResponse()
     },
@@ -112,12 +126,12 @@
 
       async fetchApiResponse() {
         try {
-          const startOfYear = dayjs().startOf('year')
-          const today = dayjs()
+          // const startOfYear = dayjs().startOf('year')
+          // const today = dayjs()
 
-          const duration = dayjs.duration(today.diff(startOfYear)).asWeeks()
+          // const duration = dayjs.duration(today.diff(startOfYear)).asWeeks()
 
-          console.log(Math.floor(duration), 'Wochen')
+          // console.log(Math.floor(duration), 'Wochen')
 
           
 
