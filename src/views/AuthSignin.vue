@@ -1,51 +1,79 @@
 <template>
   <div>
-    <h1>Sign in!</h1>
-    
-    <form @submit.prevent="handleSubmit">
-      Email<br>
-      <input type="email" v-model="user.email">
-      <br><br>
-      Password<br>
-      <input type="password" v-model="user.password">
-      <br><br>
-      <button type="submit">Sign in</button>
+    <h1>Anmelden</h1>
+
+    <transition name="slide">
+      <AlertBox icon="😢" type="error" v-if="authError">Deine E-Mail und oder das Passwort ist leider falsch.</AlertBox>
+      <AlertBox icon="👋" type="success" v-if="logoutSuccessful">Bis zum nächsten mal!</AlertBox>
+    </transition>
+      
+    <form @submit.prevent="handleSubmit" class="auth-form">
+      <input type="email" v-model="user.email" placeholder="E-Mail-Adresse" required>
+      <input type="password" v-model="user.password" placeholder="Passwort" required>
+      <router-link :to="{ name: 'AuthPasswordLost', params: { email: user.email } }" class="link--password-lost">Vergessen?</router-link>
+
+      <Button type="submit" :isLoading="isLoading">Anmelden</Button>
     </form>
+
+    <div class="link-with-text">
+      Noch nicht registriert?
+      <router-link :to="{ name: 'AuthSignup' }">Konto erstellen</router-link>
+    </div>
   </div>
 </template>
 
 <script>
   import auth from '../functions/gotrue-auth'
 
+  import Button from '../components/Button'
+  import AlertBox from '../components/AlertBox'
+
   export default {
     name: 'AuthSignin',
+
+    components: { Button, AlertBox },
 
     data: () => ({
       user: {
         email: '',
         password: ''
-      }
+      },
+      authError: false,
+      isLoading: false,
+      logoutSuccessful: null
     }),
+
+    created() {
+      this.user.email = this.$route.params?.email
+      
+      const user = auth.currentUser()
+
+      // Check if the user want's to log out
+      if (this.$route.params?.logout) {
+        this.logoutSuccessful = true
+        user
+          .logout()
+          .catch(error => {
+            console.error("Failed to logout user: %o", error)
+          })
+      }
+        
+    },
 
     methods: {
       async handleSubmit() {
+        this.logoutSuccessful = null
         try {
-          auth.login(this.user.email, this.user.password, true)
-            .then(signinResponse => {
-              this.$router.push({ name: 'Default' })
-            })
-            .catch(error => {
-              console.error(error)
-            })
+          this.isLoading = true 
+          await auth.login(this.user.email, this.user.password, true)
+          this.$router.push({ name: 'Default' })
+            
         } catch (error) {
-          console.log('Error while trying to sign in:')
-          console.error(error)
+          this.authError = true
         }
+
+        this.isLoading = false
       }
     }
   }
 </script>
-
-<style>
-
-</style>

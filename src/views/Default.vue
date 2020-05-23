@@ -12,6 +12,8 @@
       Du hast insgesamt <strong>13 Überstunden</strong> im Jahr 2020! 🤓
       <router-link class="bottom-banner__link" to="/details">Ansehen →</router-link>
     </div>
+    <br><br><br>
+    <router-link :to="{ name: 'AuthSignin', params: { logout: true } }">Logout</router-link>
   </div>
 </template>
 
@@ -45,14 +47,7 @@
       background: #2F3437;
 
       &__link {
-        color: #2EAADC;
         padding-left: 12px;
-        text-decoration: none;
-        transition: opacity 150ms ease;
-
-        &:hover {
-          opacity: .75;
-        }
       }
     }
   }

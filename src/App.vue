@@ -1,8 +1,30 @@
 <template>
-  <div id="app">
+  <div id="app" :class="a11yClass">
     <router-view/>
   </div>
 </template>
+
+<script lang="ts">
+  export default {
+    name: 'App',
+
+    data: () => ({
+      'a11yClass': 'using-keyboard'
+    }),
+
+    methods: {
+      a11yClassChange(usingKeyboard) {
+        this.a11yClass = usingKeyboard ? 'using-keyboard' : 'using-mouse'
+      }
+    },
+
+    mounted() {
+      window.addEventListener('keydown', (e) => this.a11yClassChange(true))
+      window.addEventListener('mousedown', (e) => this.a11yClassChange(false))
+      window.addEventListener('touchstart', (e) => this.a11yClassChange(false))
+    }
+  }
+</script>
 
 <style lang="scss">
   body {
@@ -18,6 +40,12 @@
     -moz-osx-font-smoothing: grayscale;
     // user-select: none;
     box-sizing: border-box;
+    font-size: 16px;
+
+    &:focus { 
+      outline: none;
+      box-shadow: none;
+    }
   }
 
   @supports (font-variation-settings: normal) {
@@ -26,11 +54,16 @@
     }
   }
 
+  .using-keyboard *:focus {
+    box-shadow: 0 0 0 3px rgba(#2EAADC, .5);
+  }
+
   #app {
     background: #363B3E;
     border-radius: 24px;
-    padding: 80px 24px 24px;
+    padding: 80px 24px;
     text-align: center;
+    overflow: hidden;
   }
 
   h1, h2, h3, p {
@@ -52,5 +85,78 @@
     line-height: 32px;
     color: rgba(255, 255, 255, 0.75);
     margin: 0 0 16px;
+  }
+
+  a {
+    color: #2EAADC;
+    text-decoration: none;
+    transition: opacity 150ms ease;
+
+    &:hover {
+      opacity: .75;
+    }
+
+    &::after {
+      content: ' →'
+    }
+  }
+
+  .auth-form {
+    max-width: 328px;
+    width: 100%;
+    margin: 0 auto;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+
+    input {
+      height: 56px;
+      background-color: #2F3437;
+      padding: 0 24px;
+      border-radius: 8px;
+      border: none;
+      outline: none;
+      appearance: none;
+      color: #fff;
+      width: 100%;
+      margin-bottom: 24px;
+      
+      &::placeholder {
+        color: rgba(#fff, .25);
+      }
+    }
+
+    .link--password-lost {
+      margin: -8px 0 0;
+      align-self: flex-end;
+    }
+
+    button {
+      margin-top: 32px;
+    }
+  }
+
+  .link-with-text {
+    font-size: 18px;
+    line-height: 24px;
+    color: rgba(255, 255, 255, 0.5);
+    margin-top: 64px;
+
+    a {
+      margin-left: 12px;
+      font-size: 18px;
+    }
+  }
+
+  // Transitions
+  .slide-enter-active {
+    transition: all 450ms ease;
+  }
+  .slide-leave-active {
+    transition: all 300ms cubic-bezier(1.0, 0.5, 0.8, 1.0);
+  }
+  .slide-enter, .slide-fade-leave-to {
+    // transform: translateX(-80px);
+    opacity: 0;
   }
 </style>
