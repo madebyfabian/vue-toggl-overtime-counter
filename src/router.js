@@ -10,6 +10,11 @@ const routes = [
     name: 'Default',
     component: Default
   },
+  {
+    path: '/auth/signup',
+    name: 'AuthSignup',
+    component: () => import(/* webpackChunkName: "AuthSignup" */ './views/AuthSignup.vue')
+  }
   // {
   //   path: '/about',
   //   name: 'About',

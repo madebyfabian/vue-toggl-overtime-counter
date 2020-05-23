@@ -12,7 +12,6 @@
       Du hast insgesamt <strong>13 Überstunden</strong> im Jahr 2020! 🤓
       <router-link class="bottom-banner__link" to="/details">Ansehen →</router-link>
     </div>
-    <code style="text-align: left;"><pre>{{localStorageData}}</pre></code>
   </div>
 </template>
 
@@ -90,19 +89,6 @@
       weekListData: null
     }),
 
-    computed: {
-      localStorageData() {
-        const test = localStorage.getItem('VUE_APP_LOCAL_STORAGE_TEST')
-        if (!test) {
-          console.log('Entry not found... going to write VUE_APP_LOCAL_STORAGE_TEST to the localStorage.')
-          window.localStorage.setItem('VUE_APP_LOCAL_STORAGE_TEST', 'TEST')
-        } else
-          console.log('Entry found!')
-
-        return JSON.stringify(localStorage, null, 2)
-      }
-    },
-
     methods: {
       buildAPIUrl(pathname, data) {
         const url = new URL('https://toggl.com/reports/api/v2')
@@ -127,11 +113,6 @@
           console.log(Math.floor(duration), 'Wochen')
 
           
-
-
-
-
-
 
 
           this.isLoading = true
