@@ -3,10 +3,18 @@
     <h1>Konto erstellen</h1>
 
     <transition name="slide">
-      <AlertBox icon="📧" type="success" v-if="signupStatus === 'success'">Danke für deine Registrierung! Schau in deine Emails um dein Konto zu bestätigen.</AlertBox>
-      <AlertBox icon="❌" type="error" v-if="signupStatus === 'error'">Fehler bei der Registrierung, versuch es mit einer anderen E-Mail-Adresse!</AlertBox>
-      <AlertBox icon="❌" type="error" v-if="signupStatus === 'emailsNotEqual'">Die angegebenen E-Mail-Adressen stimmen nicht überein.</AlertBox>
-      <AlertBox icon="🙈" type="error" v-if="signupStatus === 'passwordTooShort'">Dein Passwort sollte mindestens 8 Zeichen enthalten.</AlertBox>
+      <AlertBox icon="❌" type="error" v-if="signupStatus === 'error'">
+        Fehler bei der Registrierung, versuch es mit einer anderen E-Mail-Adresse!
+      </AlertBox>
+      <AlertBox icon="❌" type="error" v-if="signupStatus === 'emailsNotEqual'">
+        Die angegebenen E-Mail-Adressen stimmen nicht überein.
+      </AlertBox>
+      <AlertBox icon="🙈" type="error" v-if="signupStatus === 'passwordTooShort'">
+        Dein Passwort sollte mindestens 8 Zeichen enthalten.
+      </AlertBox>
+      <AlertBox icon="📧" type="success" v-if="signupStatus === 'success'">
+        Danke für deine Registrierung! Schau in deine Emails um dein Konto zu bestätigen.
+      </AlertBox>
     </transition>
     
     <div v-if="signupStatus !== 'success'">
@@ -15,7 +23,7 @@
         <input type="email" v-model="user.emailRepeat" placeholder="E-Mail-Adresse wiederholen" required>
         <input type="password" v-model="user.password" placeholder="Passwort" required>
 
-        <Button type="submit" :isLoading="isLoading">Anmelden</Button>
+        <Button type="submit" :isLoading="isLoading">Konto erstellen</Button>
       </form>
 
       <div class="link-with-text">

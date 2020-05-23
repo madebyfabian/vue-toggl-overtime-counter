@@ -101,6 +101,14 @@
     }
   }
 
+  p {
+    color: rgba(#fff, .75);
+    max-width: 328px;
+    width: 100%;
+    line-height: 24px;
+    margin: 0 auto 40px;
+  }
+
   .auth-form {
     max-width: 328px;
     width: 100%;
@@ -120,6 +128,10 @@
       color: #fff;
       width: 100%;
       margin-bottom: 24px;
+
+      &:last-of-type {
+        margin: 0;
+      }
       
       &::placeholder {
         color: rgba(#fff, .25);
@@ -127,12 +139,12 @@
     }
 
     .link--password-lost {
-      margin: -8px 0 0;
+      margin: 12px 0 0;
       align-self: flex-end;
     }
 
     button {
-      margin-top: 32px;
+      margin-top: 40px;
     }
   }
 

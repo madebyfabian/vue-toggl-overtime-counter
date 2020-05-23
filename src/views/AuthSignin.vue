@@ -1,23 +1,28 @@
 <template>
   <div>
-    <h1>Anmelden</h1>
-
-    <transition name="slide">
-      <AlertBox icon="😢" type="error" v-if="authError">Deine E-Mail und oder das Passwort ist leider falsch.</AlertBox>
+    <div v-if="logoutSuccessful">
       <AlertBox icon="👋" type="success" v-if="logoutSuccessful">Bis zum nächsten mal!</AlertBox>
-    </transition>
-      
-    <form @submit.prevent="handleSubmit" class="auth-form">
-      <input type="email" v-model="user.email" placeholder="E-Mail-Adresse" required>
-      <input type="password" v-model="user.password" placeholder="Passwort" required>
-      <router-link :to="{ name: 'AuthPasswordLost', params: { email: user.email } }" class="link--password-lost">Vergessen?</router-link>
+    </div>
 
-      <Button type="submit" :isLoading="isLoading">Anmelden</Button>
-    </form>
+    <div v-else>
+      <h1>Anmelden</h1>
+      <transition name="slide">
+        <AlertBox icon="😢" type="error" v-if="authError">Deine E-Mail und oder das Passwort ist leider falsch.</AlertBox>
+        
+      </transition>
+        
+      <form @submit.prevent="handleSubmit" class="auth-form">
+        <input type="email" v-model="user.email" placeholder="E-Mail-Adresse" required>
+        <input type="password" v-model="user.password" placeholder="Passwort" required>
+        <router-link :to="{ name: 'AuthPasswordLost', params: { email: user.email } }" class="link--password-lost">Vergessen?</router-link>
 
-    <div class="link-with-text">
-      Noch nicht registriert?
-      <router-link :to="{ name: 'AuthSignup' }">Konto erstellen</router-link>
+        <Button type="submit" :isLoading="isLoading">Anmelden</Button>
+      </form>
+
+      <div class="link-with-text">
+        Noch nicht registriert?
+        <router-link :to="{ name: 'AuthSignup' }">Konto erstellen</router-link>
+      </div>
     </div>
   </div>
 </template>
@@ -51,13 +56,16 @@
       // Check if the user want's to log out
       if (this.$route.params?.logout) {
         this.logoutSuccessful = true
-        user
-          .logout()
+        user.logout()
+          .then(() => {
+            setTimeout(() => {
+              this.logoutSuccessful = null
+            }, 3000)
+          })
           .catch(error => {
             console.error("Failed to logout user: %o", error)
           })
       }
-        
     },
 
     methods: {
