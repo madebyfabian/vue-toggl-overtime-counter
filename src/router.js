@@ -16,7 +16,7 @@ const routes = [
       // Check, if the user clicked the email-confirmation link
       const confirmationToken = to.hash.match(/(?<=#confirmation_token=)(.*)$/)?.[0]
       if (confirmationToken) {
-        auth.confirm(confirmationToken)
+        auth.confirm(confirmationToken, true)
           .then(confirmation => {
             console.log('Successfully registered and confirmed! Now redirecting to the root', confirmation)
             return next()

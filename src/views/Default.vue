@@ -94,19 +94,6 @@
       const user = auth.currentUser()
       console.log('Current user', user)
 
-      if (user) {
-        // Update
-        user.update({
-          user_metadata: {
-            haha: true
-          }
-        }).then(response => {
-          console.log(response)
-        }).catch(error => {
-          console.error(error)
-        })
-      }
-
       await this.fetchApiResponse()
     },
 
