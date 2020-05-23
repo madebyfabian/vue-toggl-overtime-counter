@@ -17,7 +17,6 @@
 
 <style lang="scss" scoped>
   .default-view {
-    padding: 80px 24px 24px;
     text-align: center;
     min-height: 480px;
     position: relative;
@@ -71,6 +70,8 @@
   import duration from 'dayjs/plugin/duration'
   dayjs.extend(duration)
 
+  import auth from '../functions/gotrue-auth'
+
   import RefreshButton from '../components/RefreshButton'
   import WeekList from '../components/WeekList'
   import BigHeadline from '../components/BigHeadline'
@@ -88,6 +89,12 @@
       isLoading: true,
       weekListData: null
     }),
+
+    async created() {
+      console.log('Current user', auth.currentUser())
+
+      await this.fetchApiResponse()
+    },
 
     methods: {
       buildAPIUrl(pathname, data) {
@@ -194,10 +201,6 @@
           console.log(error.message)
         }
       }
-    },
-
-    async created() {
-      await this.fetchApiResponse()
     }
   }
 </script>

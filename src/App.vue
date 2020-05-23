@@ -29,6 +29,8 @@
   #app {
     background: #363B3E;
     border-radius: 24px;
+    padding: 80px 24px 24px;
+    text-align: center;
   }
 
   h1, h2, h3, p {
