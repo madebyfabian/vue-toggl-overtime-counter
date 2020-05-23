@@ -99,6 +99,14 @@
     &::after {
       content: ' →'
     }
+
+    &[target=_blank]::after {
+      content: ' ↗'
+    }
+
+    &:active {
+      opacity: .5;
+    }
   }
 
   p {
@@ -145,6 +153,18 @@
 
     button {
       margin-top: 40px;
+    }
+  }
+
+  .button-group {
+    display: flex;
+    
+    *:first-child {
+      margin-right: 8px;
+    }
+
+    *:last-child {
+      margin-left: 8px;
     }
   }
 

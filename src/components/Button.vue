@@ -1,7 +1,7 @@
 <template>
   <button 
     class="button" 
-    :type="type" 
+    :type="type || 'button'" 
     :class="`button--${buttonType || 'primary'}`"
     :isLoading="isLoading">
 
@@ -27,7 +27,7 @@
     outline: none;
     appearance: none;
     background: #2EAADC;
-    color: #363B3E;
+    color: #2F3437;
     font-weight: bold;
     position: relative;
     cursor: pointer;
@@ -43,7 +43,7 @@
       color: transparent;
 
       &::after {
-        color: #363B3E;
+        color: #2F3437;
         content: '↻';
         top: 0;
         height: 56px;

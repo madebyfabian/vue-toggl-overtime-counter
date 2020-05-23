@@ -1,64 +1,113 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Default from '@/views/Default.vue'
+import Dashboard from '@/views/Dashboard.vue'
 
 Vue.use(VueRouter)
 
 import auth from './functions/gotrue-auth'
+import EmptyRouterView from './components/EmptyRouterView'
 
 const routes = [
   {
     path: '/',
-    name: 'Default',
-    component: Default,
+    name: 'Dashboard',
+    component: Dashboard,
 
     beforeEnter: async (to, from, next) => {
-      // Check, if the user clicked the signup email-confirmation link
-      const confirmationToken = to.hash.match(/(?<=#confirmation_token=)(.*)$/)?.[0]
-      if (confirmationToken) {
-        auth.confirm(confirmationToken, true)
-          .then(confirmation => {
-            console.log('Successfully registered and confirmed! Now redirecting to the root', confirmation)
-            return next()
-          })
-          .catch(error => {
-            // Error while confirming. Maybe the user already confirmed it. Redirect to login
-            console.log('Error while confirming. Maybe the user already confirmed it. Redirect to login')
-            console.error(error)
-            return next({ name: 'AuthSignin' })
-          })
-      }
-
-      if (!auth.currentUser())
-        return next({ name: 'AuthSignin' })
-
-      return next()
+      if (!auth.currentUser()) next({ name: 'AuthSignin' })
+      else next()
     }
   },
-  {
-    path: '/auth/signup',
-    name: 'AuthSignup',
-    component: () => import(/* webpackChunkName: "AuthSignup" */ './views/AuthSignup.vue')
-  },
-  {
-    path: '/auth/signin',
-    name: 'AuthSignin',
-    component: () => import(/* webpackChunkName: "AuthSignin" */ './views/AuthSignin.vue'),
 
-    beforeEnter: async (to, from, next) => {
-      // Check if user is already logged in
-      const user = auth.currentUser()
-      if (user)
-        next({ name: 'Default' })
-      
-      next()
-    }
-  },
+  /**
+   * Auth
+   */
   {
-    path: '/auth/password-lost',
-    name: 'AuthPasswordLost',
-    component: () => import(/* webpackChunkName: "AuthPasswordLost" */ './views/AuthPasswordLost.vue')
-  },
+    path: '/auth',
+    redirect: { name: 'AuthSignin' },
+    component: EmptyRouterView,
+
+    children: [
+      {
+        path: 'signin', 
+        name: 'AuthSignin',
+        component: () => import(/* webpackChunkName: "AuthSignin" */ './views/AuthSignin.vue'),
+
+        beforeEnter: async (to, from, next) => {
+          if (!auth.currentUser()) next()
+          else next({ name: 'Dashboard' })
+        }
+      },
+      {
+        path: 'signout',
+        name: 'AuthSignout',
+        component: () => import(/* webpackChunkName: "AuthSignout" */ './views/AuthSignout.vue'),
+
+        beforeEnter: async (to, from, next) => {
+          const user = auth.currentUser()
+          if (!user) 
+            next({ name: 'AuthSignin' })
+          else 
+            user.logout()
+              .then(response => next())
+              .catch(error => console.error("Failed to logout user: %o", error))
+        }
+      },
+      {
+        path: 'password-lost',
+        name: 'AuthPasswordLost',
+        component: () => import(/* webpackChunkName: "AuthPasswordLost" */ './views/AuthPasswordLost.vue')
+      },
+      {
+        path: 'signup', 
+        redirect: { name: 'AuthSignup' },
+        component: EmptyRouterView,
+
+        children: [
+          {
+            path: '',
+            name: 'AuthSignup',
+            component: () => import(/* webpackChunkName: "AuthSignup" */ './views/AuthSignup.vue'),
+          },
+          {
+            path: 'verify-token',
+            name: 'AuthSignup__verifyToken',
+            component: () => import(/* webpackChunkName: "AuthSignup__verifyToken" */ './views/AuthSignup__verifyToken.vue'),
+          },
+          {
+            path: '/auth/signup/account-config',
+            redirect: { name: 'AuthSignup__accountConfig__1' },
+            component: EmptyRouterView,
+
+            beforeEnter: async (to, from, next) => {
+              if (!auth.currentUser()) next({ name: 'AuthSignin' })
+              else next()
+            },
+
+            children: [
+              {
+                path: '/auth/signup/account-config/1',
+                name: 'AuthSignup__accountConfig__1',
+                component: () => import(/* webpackChunkName: "AuthSignup__accountConfig__1" */ './views/AuthSignup__accountConfig__1.vue')
+              },
+              {
+                path: '/auth/signup/account-config/2',
+                name: 'AuthSignup__accountConfig__2',
+                component: () => import(/* webpackChunkName: "AuthSignup__accountConfig__2" */ './views/AuthSignup__accountConfig__2.vue')
+              },
+              {
+                path: '/auth/signup/account-config/3',
+                name: 'AuthSignup__accountConfig__3',
+                component: () => import(/* webpackChunkName: "AuthSignup__accountConfig__3" */ './views/AuthSignup__accountConfig__3.vue')
+              }
+            ]
+          }
+        ]
+      } // end /auth/signup
+    ]
+  }, // end /auth
+
+
 ]
 
 const router = new VueRouter({

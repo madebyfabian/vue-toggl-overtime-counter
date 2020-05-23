@@ -6,9 +6,9 @@
       <AlertBox icon="😢" type="error" v-if="errorSendingRecoveryPIN">
         Fehler beim Senden der Wiederherstellungs-PIN. Bist du mit dieser E-Mail-Adresse registriert?
       </AlertBox>
-      <p v-if="recoveryPINSent && !allOperationsFinished">
-        Trage nun deine Wiederherstellungs-PIN (welche wir dir soeben an <strong>{{ user.email }}</strong> gesendet haben) und ein neues Passwort ein.
-      </p>
+      <AlertBox icon="👌" type="info" v-if="recoveryPINSent && !allOperationsFinished">
+        Du hast soeben eine Bestätigungs-PIN per E-Mail an <strong>{{ user.email }}</strong> erhalten.
+      </AlertBox>
     </transition>
 
     <transition name="slide">
@@ -26,7 +26,7 @@
       </AlertBox>
       <AlertBox icon="🥳" type="success" v-if="allOperationsFinished">
         Dein Passwort wurde erfolgreich geändert und du wurdest angemeldet.<br><br>
-        <router-link :to="{ name: 'Default' }">Zur Übersicht</router-link>
+        <router-link :to="{ name: 'Dashboard' }">Zur Übersicht</router-link>
       </AlertBox>
     </transition>
 

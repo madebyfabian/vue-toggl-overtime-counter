@@ -1,28 +1,23 @@
 <template>
   <div>
-    <div v-if="logoutSuccessful">
-      <AlertBox icon="👋" type="success" v-if="logoutSuccessful">Bis zum nächsten mal!</AlertBox>
-    </div>
+    <h1>Anmelden</h1>
+    <transition name="slide">
+      <AlertBox icon="😢" type="error" v-if="authError">
+        Deine E-Mail und oder das Passwort ist leider falsch.
+      </AlertBox>
+    </transition>
+      
+    <form @submit.prevent="handleSubmit" class="auth-form">
+      <input type="email" v-model="user.email" placeholder="E-Mail-Adresse" required>
+      <input type="password" v-model="user.password" placeholder="Passwort" required>
+      <router-link :to="{ name: 'AuthPasswordLost', params: { email: user.email } }" class="link--password-lost">Vergessen?</router-link>
 
-    <div v-else>
-      <h1>Anmelden</h1>
-      <transition name="slide">
-        <AlertBox icon="😢" type="error" v-if="authError">Deine E-Mail und oder das Passwort ist leider falsch.</AlertBox>
-        
-      </transition>
-        
-      <form @submit.prevent="handleSubmit" class="auth-form">
-        <input type="email" v-model="user.email" placeholder="E-Mail-Adresse" required>
-        <input type="password" v-model="user.password" placeholder="Passwort" required>
-        <router-link :to="{ name: 'AuthPasswordLost', params: { email: user.email } }" class="link--password-lost">Vergessen?</router-link>
+      <Button type="submit" :isLoading="isLoading">Anmelden</Button>
+    </form>
 
-        <Button type="submit" :isLoading="isLoading">Anmelden</Button>
-      </form>
-
-      <div class="link-with-text">
-        Noch nicht registriert?
-        <router-link :to="{ name: 'AuthSignup' }">Konto erstellen</router-link>
-      </div>
+    <div class="link-with-text">
+      Noch nicht registriert?
+      <router-link :to="{ name: 'AuthSignup' }">Konto erstellen</router-link>
     </div>
   </div>
 </template>
@@ -50,31 +45,16 @@
 
     created() {
       this.user.email = this.$route.params?.email
-      
-      const user = auth.currentUser()
-
-      // Check if the user want's to log out
-      if (this.$route.params?.logout) {
-        this.logoutSuccessful = true
-        user.logout()
-          .then(() => {
-            setTimeout(() => {
-              this.logoutSuccessful = null
-            }, 3000)
-          })
-          .catch(error => {
-            console.error("Failed to logout user: %o", error)
-          })
-      }
     },
 
     methods: {
       async handleSubmit() {
+        this.isLoading = true 
         this.logoutSuccessful = null
+
         try {
-          this.isLoading = true 
-          await auth.login(this.user.email, this.user.password, true)
-          this.$router.push({ name: 'Default' })
+          const loginResponse = await auth.login(this.user.email, this.user.password, true)
+          this.$router.push({ name: 'Dashboard' })
             
         } catch (error) {
           this.authError = true

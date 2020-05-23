@@ -5,15 +5,15 @@
       @click.native="fetchApiResponse" 
       :isLoading="isLoading"
     />
-    <h2>Hej, Fabian! Du hast diese Woche</h2>
+    <h2>Hej, {{ user.user_metadata.full_name }}! Du hast diese Woche</h2>
     <BigHeadline :weekListData="weekListData" />
     <WeekList class="week-list" :weekListData="weekListData" />
-    <div class="bottom-banner">
+    <!-- <div class="bottom-banner">
       Du hast insgesamt <strong>13 Überstunden</strong> im Jahr 2020! 🤓
       <router-link class="bottom-banner__link" to="/details">Ansehen →</router-link>
-    </div>
+    </div> -->
     <br><br><br>
-    <router-link :to="{ name: 'AuthSignin', params: { logout: true } }">Logout</router-link>
+    <router-link :to="{ name: 'AuthSignout' }">Logout</router-link>
   </div>
 </template>
 
@@ -71,8 +71,10 @@
   import WeekList from '../components/WeekList'
   import BigHeadline from '../components/BigHeadline'
 
+  import TogglAPI from '../functions/toggl-api'
+
   export default {
-    name: 'Home',
+    name: 'Dashboard',
 
     components: {
       RefreshButton,
@@ -82,14 +84,15 @@
 
     data: () => ({
       isLoading: true,
-      weekListData: null
+      weekListData: null,
+      user: auth.currentUser()
     }),
 
     async created() {
-      const user = auth.currentUser()
-      console.log('Current user', user)
-
       await this.fetchApiResponse()
+
+      const toggl = new TogglAPI
+      console.log(await toggl.getWorkspaceProjects(2123160))
     },
 
     methods: {

@@ -33,12 +33,16 @@
       background: #354C4B;
     }
 
+    &[type=info] {
+      color: #C9CDCF;
+      background: #454B4E;
+    }
+
     &__icon {
       width: 24px;
       height: 24px;
       font-size: 24px;
       line-height: 24px;
-      align-self: center;
       flex-shrink: 0;
       display: inline-flex;
       align-items: center;
