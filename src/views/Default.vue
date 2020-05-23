@@ -8,10 +8,11 @@
     <h2>Hej, Fabian! Du hast diese Woche</h2>
     <BigHeadline :weekListData="weekListData" />
     <WeekList class="week-list" :weekListData="weekListData" />
-    <!-- <div class="bottom-banner">
+    <div class="bottom-banner">
       Du hast insgesamt <strong>13 Überstunden</strong> im Jahr 2020! 🤓
       <router-link class="bottom-banner__link" to="/details">Ansehen →</router-link>
-    </div> -->
+    </div>
+    <code style="text-align: left;"><pre>{{localStorageData}}</pre></code>
   </div>
 </template>
 
@@ -62,15 +63,19 @@
 <script>
   import dayjs from 'dayjs'
   import 'dayjs/locale/de'
-  import relativeTime from 'dayjs/plugin/relativeTime';
-  dayjs.extend(relativeTime);
+
+  import relativeTime from 'dayjs/plugin/relativeTime'
+  dayjs.extend(relativeTime)
+
   dayjs.locale('de')
+
+  import duration from 'dayjs/plugin/duration'
+  dayjs.extend(duration)
 
   import RefreshButton from '../components/RefreshButton'
   import WeekList from '../components/WeekList'
   import BigHeadline from '../components/BigHeadline'
 
-  // @ is an alias to /src
   export default {
     name: 'Home',
 
@@ -84,6 +89,19 @@
       isLoading: true,
       weekListData: null
     }),
+
+    computed: {
+      localStorageData() {
+        const test = localStorage.getItem('VUE_APP_LOCAL_STORAGE_TEST')
+        if (!test) {
+          console.log('Entry not found... going to write VUE_APP_LOCAL_STORAGE_TEST to the localStorage.')
+          window.localStorage.setItem('VUE_APP_LOCAL_STORAGE_TEST', 'TEST')
+        } else
+          console.log('Entry found!')
+
+        return JSON.stringify(localStorage, null, 2)
+      }
+    },
 
     methods: {
       buildAPIUrl(pathname, data) {
@@ -101,6 +119,21 @@
 
       async fetchApiResponse() {
         try {
+          const startOfYear = dayjs().startOf('year')
+          const today = dayjs()
+
+          const duration = dayjs.duration(today.diff(startOfYear)).asWeeks()
+
+          console.log(Math.floor(duration), 'Wochen')
+
+          
+
+
+
+
+
+
+
           this.isLoading = true
 
           // Call TOGGL API to get the entries for this week.
@@ -110,6 +143,10 @@
             'since': '2020-05-18',
             'project_ids': 155439157
           })
+
+          const SECRET_API_KEY = process.env?.VUE_APP_API_KEY
+          if (!SECRET_API_KEY)
+            throw new Error('Please provide a VUE_APP_API_KEY environment variable!')
 
           const resultApi = await fetch(url, {
             method: 'GET',
