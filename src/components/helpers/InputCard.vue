@@ -126,12 +126,12 @@
         display: block;
         color: rgba(255, 255, 255, 0.75);
         height: 16px;
+      }
 
-        * {
-          font-size: 14px;
-          line-height: 16px;
-          display: inline-block;
-        }
+      .sublabel, .sublabel * {
+        font-size: 14px;
+        line-height: 16px;
+        display: inline-block;
       }
     }
   }
