@@ -19,6 +19,18 @@ const routes = [
     }
   },
 
+
+
+
+  {
+    path: '/test',
+    name: 'Test',
+    component: () => import(/* webpackChunkName: "Test" */ './views/Test.vue')
+  },
+
+
+
+
   /**
    * Auth
    */
@@ -99,6 +111,11 @@ const routes = [
                 path: '/auth/signup/account-config/3',
                 name: 'AuthSignup__accountConfig__3',
                 component: () => import(/* webpackChunkName: "AuthSignup__accountConfig__3" */ './views/AuthSignup__accountConfig__3.vue')
+              },
+              {
+                path: '/auth/signup/account-config/5',
+                name: 'AuthSignup__accountConfig__5',
+                component: () => import(/* webpackChunkName: "AuthSignup__accountConfig__5" */ './views/AuthSignup__accountConfig__5.vue')
               }
             ]
           }

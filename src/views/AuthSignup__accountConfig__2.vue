@@ -14,7 +14,7 @@
 
       <div class="button-group">
         <Button buttonType="secondary" @click.native="$router.push({ name: 'AuthSignup__accountConfig__1' })">&larr; Zurück</Button>
-        <Button type="submit" :isLoading="isLoading" tabindex="1">Weiter &rarr;</Button>
+        <Button type="submit" :isLoading="isLoading">Weiter &rarr;</Button>
       </div>
     </form>
   </div>
@@ -55,10 +55,9 @@
 
           // Check if API Key is Valid
           const userData = await TogglAPI.getUserData()
-          console.log(userData)
 
           // Redirect to next view
-          this.$router.push({ name: 'AuthSignup__accountConfig__3' })
+          this.$router.push({ name: 'AuthSignup__accountConfig__3', props: { workspaces: userData.data.workspaces } })
 
         } catch (error) {
           this.error = true

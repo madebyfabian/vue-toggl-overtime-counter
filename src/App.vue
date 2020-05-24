@@ -55,7 +55,7 @@
   }
 
   .using-keyboard *:focus {
-    box-shadow: 0 0 0 3px rgba(#2EAADC, .5);
+    box-shadow: 0 0 0 3px rgba(#2EAADC, .5)!important
   }
 
   #app {
