@@ -71,7 +71,7 @@
   import WeekList from '../components/WeekList'
   import BigHeadline from '../components/BigHeadline'
 
-  import TogglAPI from '../functions/toggl-api'
+  import TogglAPI from '../functions/TogglAPI'
 
   export default {
     name: 'Dashboard',
@@ -91,8 +91,10 @@
     async created() {
       await this.fetchApiResponse()
 
-      const toggl = new TogglAPI
-      console.log(await toggl.getWorkspaceProjects(2123160))
+      const myWorkspace = 2123160
+
+      console.log('workspace projects', await TogglAPI.getWorkspaceProjects(myWorkspace))
+      console.log('workspace clients', await TogglAPI.getWorkspaceClients(myWorkspace))
     },
 
     methods: {

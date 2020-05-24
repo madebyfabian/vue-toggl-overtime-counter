@@ -26,7 +26,7 @@
   import AlertBox from '../components/AlertBox'
   import Button from '../components/Button'
 
-  import TogglAPI from '../functions/toggl-api'
+  import TogglAPI from '../functions/TogglAPI'
 
   export default {
     name: 'AuthSignup__accountConfig__2',
@@ -50,12 +50,12 @@
         try {
           const user = auth.currentUser()
 
-          // Check if API Key is Valid
-          const toggl = new TogglAPI(this.configData.togglApiKey)
-          await toggl.getUserData()
-
-          // API Key seems valid. Save it into Identity DB.
+          // Save it into Identity DB.
           await user.update({ data: { togglApiKey: this.configData.togglApiKey } })
+
+          // Check if API Key is Valid
+          const userData = await TogglAPI.getUserData()
+          console.log(userData)
 
           // Redirect to next view
           this.$router.push({ name: 'AuthSignup__accountConfig__3' })

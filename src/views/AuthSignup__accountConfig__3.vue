@@ -101,8 +101,6 @@
   import AlertBox from '../components/AlertBox'
   import Button from '../components/Button'
 
-  import TogglAPI from '../functions/toggl-api'
-
   export default {
     name: 'AuthSignup__accountConfig__3',
 

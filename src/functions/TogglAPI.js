@@ -1,31 +1,18 @@
 import auth from './gotrue-auth'
 
 
+const config = { BASE_URL: 'https://www.toggl.com/api/v8' }
+
+
+/**
+ * Toggl API Wrapper.
+ */
 export default class TogglAPI {
-  #APIHeaders
-  #baseURL = 'https://www.toggl.com/api/v8'
-
-  /**
-   * Toggl API Wrapper.
-   * @param {string} APIKey The Toggl API Key
-   */
-  constructor() {
-    const APIKey = auth.currentUser()?.user_metadata?.togglApiKey
-    if (!APIKey)
-      throw new Error('APIKey is missing!.')
-
-    this.#APIHeaders = {
-      'Authorization': `Basic ${btoa(`${APIKey}:api_token`)}`
-    }
-  }
-
-
-
   /**
    * Get current user data.
    * @see https://github.com/toggl/toggl_api_docs/blob/master/chapters/users.md#get-current-user-data
    */
-  async getUserData() {
+  static async getUserData() {
     return await this.#get('/me')
   }
 
@@ -35,29 +22,36 @@ export default class TogglAPI {
    * Get data about all the workspaces where the token owner belongs to.
    * @see https://github.com/toggl/toggl_api_docs/blob/master/chapters/workspaces.md#get-workspaces
    */
-  async getWorkspaces() {
+  static async getWorkspaces() {
     return await this.#get('/workspaces')
   }
-
 
   /**
    * Get single workspace.
    * @see https://github.com/toggl/toggl_api_docs/blob/master/chapters/workspaces.md#get-single-workspace
    * @param {number} workspaceId The ID of the workspace.
    */
-  async getWorkspaceById( workspaceId ) {
+  static async getWorkspace( workspaceId ) {
     return await this.#get(`/workspaces/${workspaceId}`)
   }
 
-
   /**
    * Get workspace projects.
+   * @see https://github.com/toggl/toggl_api_docs/blob/master/chapters/workspaces.md#get-workspace-projects
    * @param {number} workspaceId The ID of the workspace.
    */
-  async getWorkspaceProjects( workspaceId ) {
+  static async getWorkspaceProjects( workspaceId ) {
     return await this.#get(`/workspaces/${workspaceId}/projects`)
   }
 
+  /**
+   * Get workspace clients.
+   * @see https://github.com/toggl/toggl_api_docs/blob/master/chapters/workspaces.md#get-workspace-clients
+   * @param {number} workspaceId The ID of the workspace.
+   */
+  static async getWorkspaceClients( workspaceId ) {
+    return await this.#get(`/workspaces/${workspaceId}/clients`)
+  }
 
 
   // ------------------ PRIVATE ------------------
@@ -66,16 +60,35 @@ export default class TogglAPI {
    * HTTP GET with the Authorization Headers
    * @param {string} path The API URL Path (e.g. "/me")
    */
-  async #get( path ) {
-    const result = await fetch(this.#baseURL + path, { method: 'GET', headers: this.#APIHeaders })
+  static async #get( path ) {
+    const result = await fetch(config.BASE_URL + path, { 
+      method: 'GET', 
+      headers: new Headers({
+        'Authorization': `Basic ${this.#APITokenString}`
+      })
+    })
     return this.#handleAPIResponse(result)
   }
+
+
+  /**
+   * The HTTP Basic Authentication String
+   * @returns Something like "XXXXXXXXXXXXXX=="
+   */
+  static get #APITokenString() {
+    const APIToken = auth.currentUser()?.user_metadata?.togglApiKey
+    if (!APIToken)
+      throw new Error('No API Token provided!')
+    
+    return btoa(`${auth.currentUser()?.user_metadata?.togglApiKey}:api_token`)
+  }
+
 
   /**
    * Handle a result object coming directly from the JS fetch() API.
    * @param {object} result fetch() result object
    */
-  async #handleAPIResponse( result ) {
+  static async #handleAPIResponse( result ) {
     if (result.ok) 
       return await result.json()
     else {
