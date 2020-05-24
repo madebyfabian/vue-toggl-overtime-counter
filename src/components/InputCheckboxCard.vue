@@ -2,7 +2,7 @@
   <InputCard 
     :isSelected="isChecked" 
     @click.native="onClick" 
-    @keypress.native="keyDown"
+    @keypress.native.prevent="keyDown"
     type="checkbox">
 
     <template v-slot:label><slot name="label" /></template>
