@@ -1,28 +1,19 @@
 <template>
   <div>
-    <label>
-      Mein Workspace
-      <input type="radio" name="test" value="Mein Workspace" v-model="selectedItem">
-    </label><br><br>
-
-    <label>
-      Mein Workspace2
-      <input type="radio" name="test" value="Mein Workspace2" v-model="selectedItem">
-    </label>
-
-    <br><br>
-    <span>Checked name: {{ selectedItem }}</span>
+    <Button :isLoading="true">Lol, oder?</Button>
   </div>
 </template>
 
 <script>
+  import Button from '../components/Button'
+
   export default {
     name: 'Test',
 
-    components: { },
+    components: { Button },
 
     data: () => ({
-      selectedItem: null
+      selectedItem: 'omg'
     })
   }
 </script>

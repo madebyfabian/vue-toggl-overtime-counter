@@ -10,7 +10,7 @@
     </transition>
 
     <form @submit.prevent="handleSubmit" class="auth-form">
-      <input type="text" v-model.trim="configData.togglApiKey" placeholder="Toggl API-Key" required>
+      <input type="text" v-model.trim="configData.togglApiKey" placeholder="Toggl API-Key" required spellcheck="false">
 
       <div class="button-group">
         <Button buttonType="secondary" @click.native="$router.push({ name: 'AuthSignup__accountConfig__1' })">&larr; Zurück</Button>

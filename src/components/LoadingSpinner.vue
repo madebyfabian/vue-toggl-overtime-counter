@@ -52,6 +52,7 @@ export default {
       height: var(--size, 24px);
       font-size: var(--size, 24px);
       line-height: var(--size, 24px);
+      font-weight: 400;
       animation: buttonRotate 500ms linear infinite;
       text-align: center;
     }

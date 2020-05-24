@@ -50,7 +50,7 @@
       <p class="counter"><strong>{{calculatedHours}}</strong> Stunden gesamt/Woche</p>
 
       <div class="button-group">
-        <Button buttonType="secondary" @click.native="$router.push({ name: 'AuthSignup__accountConfig__2' })">&larr; Zurück</Button>
+        <Button buttonType="secondary" @click.native="$router.push({ name: 'AuthSignup__accountConfig__3' })">&larr; Zurück</Button>
         <Button type="submit" :isLoading="isLoading">Weiter &rarr;</Button>
       </div>
     </form>

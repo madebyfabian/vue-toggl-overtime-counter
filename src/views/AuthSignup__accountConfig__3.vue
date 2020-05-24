@@ -12,15 +12,15 @@
 
     <form @submit.prevent="handleSubmit" class="auth-form">
       <div class="checkbox-group" v-if="workspaces.length">
-        <InputCheckboxCard 
+        <InputRadioCard 
           v-for="(workspace, i) of workspaces"
-          v-model="selectedWorkspaces" 
+          v-model="selectedWorkspace" 
           :key="i"
           :val="workspace.id">
 
           <template v-slot:label>{{ workspace.name }}</template>
           <template v-slot:sublabel><span style="opacity: .5">#</span><span>{{ workspace.id }}</span></template>
-        </InputCheckboxCard>
+        </InputRadioCard>
       </div>
       
       <LoadingSpinner class="loading-spinner" v-else />
@@ -45,21 +45,21 @@
   import AlertBox from '../components/AlertBox'
   import Button from '../components/Button'
   import LoadingSpinner from '../components/LoadingSpinner'
-  import InputCheckboxCard from '../components/InputCheckboxCard'
+  import InputRadioCard from '../components/InputRadioCard'
 
   import TogglAPI from '../functions/TogglAPI'
 
   export default {
     name: 'AuthSignup__accountConfig__3',
 
-    components: { Button, AlertBox, LoadingSpinner, InputCheckboxCard },
+    components: { Button, AlertBox, LoadingSpinner, InputRadioCard },
 
     data: () => ({
       isLoading: false,
       error: false,
       user: auth.currentUser(),
       workspaces: [],
-      selectedWorkspaces: []
+      selectedWorkspace: auth.currentUser()?.user_metadata?.trackedWorkspace
     }),
 
     async created() {
@@ -73,7 +73,7 @@
         }
 
         this.workspaces = workspaces
-        console.log(workspaces)
+        this.selectedWorkspace = workspaces[0].id
 
       } catch (error) {
         this.error = true
@@ -89,8 +89,8 @@
         try {
           const user = auth.currentUser()
 
-          // Update user data to fill in the tracked workspaces
-          user.update({ data: { trackedWorkspaces: this.selectedWorkspaces } })
+          // Update user data to fill in the tracked workspace
+          await user.update({ data: { trackedWorkspace: this.selectedWorkspace } })
 
           // Redirect to next view
           this.$router.push({ name: 'AuthSignup__accountConfig__5' })

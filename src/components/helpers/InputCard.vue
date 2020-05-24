@@ -84,6 +84,7 @@
       transition: all 150ms ease;
       position: relative;
       background: transparent;
+      align-self: center;
 
       &::after {
         content: '✓';

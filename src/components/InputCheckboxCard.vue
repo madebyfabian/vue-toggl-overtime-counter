@@ -14,7 +14,7 @@
   import InputCard from './helpers/InputCard'
 
   export default {
-    name: 'InputCheckboxCardV2',
+    name: 'InputCheckboxCard',
 
     components: { InputCard },
 

@@ -2,16 +2,21 @@
   <button 
     class="button" 
     :type="type || 'button'" 
-    :class="`button--${buttonType || 'primary'}`"
-    :isLoading="isLoading">
+    :class="`button--${buttonType || 'primary'}`">
 
-    <slot/>
+    <LoadingSpinner v-if="isLoading" color="#2F3437" class="loading-spinner" />
+    <slot v-else/>
   </button>
 </template>
 
 <script>
+  import LoadingSpinner from '../components/LoadingSpinner'
+
   export default {
     name: 'Button',
+
+    components: { LoadingSpinner },
+
     props: [ 'type', 'buttonType', 'isLoading' ]
   }
 </script>
@@ -28,38 +33,20 @@
     appearance: none;
     background: #2EAADC;
     color: #2F3437;
-    font-weight: bold;
+    font-weight: 600;
     position: relative;
     cursor: pointer;
     transition: opacity 150ms ease, transform 150ms ease, box-shadow 150ms ease;
+
+    .loading-spinner {
+      display: inline-block;
+      margin-left: 8px;
+    }
 
     &--secondary {
       color: #C0C5C8; 
       border: 2px solid #454B4E;
       background: transparent;
-    }
-
-    &[isLoading=true] {
-      color: transparent;
-
-      &::after {
-        color: #2F3437;
-        content: '↻';
-        top: 0;
-        height: 56px;
-        width: 56px;
-        left: calc(50% - (56px / 2));
-        line-height: 56px;
-        position: absolute;
-        text-align: center;
-        animation: buttonRotate 450ms linear infinite;
-        font-size: 24px;
-      }
-      
-      @keyframes buttonRotate {
-        from { transform: rotate(45deg) }
-        to { transform: rotate(calc(360deg + 45deg)) }
-      }
     }
 
     &:hover {
