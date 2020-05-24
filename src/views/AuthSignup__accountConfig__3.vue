@@ -70,10 +70,9 @@
           // Didn't got any workspaces as prop. So fetch them again then.
           const userData = await TogglAPI.getUserData()
           workspaces = userData?.data?.workspaces
-        }
+        } 
 
         this.workspaces = workspaces
-        this.selectedWorkspace = workspaces[0].id
 
       } catch (error) {
         this.error = true
@@ -89,11 +88,20 @@
         try {
           const user = auth.currentUser()
 
+          const dataToUpdate = { 
+            trackedWorkspace: this.selectedWorkspace
+          }
+
+          // If the selected and the workspace in DB are the same, don't remove them
+          const currentlyTrackedWorkspace = user.user_metadata?.trackedWorkspace
+          if (currentlyTrackedWorkspace !== this.selectedWorkspace)
+            dataToUpdate.trackedProjects = []
+
           // Update user data to fill in the tracked workspace
-          await user.update({ data: { trackedWorkspace: this.selectedWorkspace } })
+          await user.update({ data: dataToUpdate })
 
           // Redirect to next view
-          this.$router.push({ name: 'AuthSignup__accountConfig__5' })
+          this.$router.push({ name: 'AuthSignup__accountConfig__4' })
 
         } catch (error) {
           this.error = true

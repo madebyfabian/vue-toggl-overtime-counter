@@ -91,11 +91,18 @@
     color: #2EAADC;
     text-decoration: none;
     transition: opacity 150ms ease;
+    cursor: pointer;
 
     &:hover {
       opacity: .75;
     }
 
+    &:active {
+      opacity: .5;
+    }
+
+
+    /** Icons */
     &::after {
       content: ' →'
     }
@@ -104,8 +111,21 @@
       content: ' ↗'
     }
 
-    &:active {
-      opacity: .5;
+
+    @mixin iconOnStart {
+      &::before { content: attr(icon)" " }
+      &::after { content: "" }
+    }
+
+    @mixin iconOnEnd {
+      &::before { content: "" }
+      &::before { content: attr(icon)" " }
+    }
+
+    &[icon] {
+      @include iconOnEnd;
+      &[icon-position=start] { @include iconOnStart }
+      &[icon-position=end] {   @include iconOnEnd }
     }
   }
 

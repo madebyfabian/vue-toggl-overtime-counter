@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>Hej, {{ user.user_metadata.full_name }}!</h1>
+    <h1>Deine Arbeitszeit</h1>
 
     <p>Trag hier ein, an welchen Wochentagen du wieviel arbeitest.</p>
 
@@ -50,7 +50,7 @@
       <p class="counter"><strong>{{calculatedHours}}</strong> Stunden gesamt/Woche</p>
 
       <div class="button-group">
-        <Button buttonType="secondary" @click.native="$router.push({ name: 'AuthSignup__accountConfig__3' })">&larr; Zurück</Button>
+        <Button buttonType="secondary" @click.native="$router.push({ name: 'AuthSignup__accountConfig__4' })">&larr; Zurück</Button>
         <Button type="submit" :isLoading="isLoading">Weiter &rarr;</Button>
       </div>
     </form>
