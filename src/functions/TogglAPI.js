@@ -1,7 +1,7 @@
 import auth from './gotrue-auth'
 
 
-const config = { BASE_URL: 'https://www.toggl.com/api/v8' }
+const config = { BASE_URL: 'https://cors-anywhere.herokuapp.com/https://www.toggl.com/api/v8' }
 
 
 /**
@@ -64,7 +64,7 @@ export default class TogglAPI {
   static async #get( path ) {
     const result = await fetch(config.BASE_URL + path, { 
       method: 'GET', 
-      mode: 'no-cors', // 'cors' by default
+      // mode: 'no-cors', // 'cors' by default
       headers: new Headers({
         'Authorization': `Basic ${this.#APITokenString}`
       })
