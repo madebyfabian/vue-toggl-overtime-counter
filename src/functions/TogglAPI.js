@@ -64,6 +64,7 @@ export default class TogglAPI {
   static async #get( path ) {
     const result = await fetch(config.BASE_URL + path, { 
       method: 'GET', 
+      mode: 'no-cors', // 'cors' by default
       headers: new Headers({
         'Authorization': `Basic ${this.#APITokenString}`
       })
