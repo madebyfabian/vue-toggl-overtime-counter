@@ -104,11 +104,11 @@
         width: 80px;
         background-size: contain;
         background-repeat: no-repeat;
-        background-image: url('../assets/toggl-logo-white@2x.png');
+        // background-image: url('assets/toggl-logo-white@2x.png');
         
-        @media screen and (-webkit-min-device-pixel-ratio: 2) {
-          background-image: url('../assets/toggl-logo-white@2x.png')
-        }
+        // @media screen and (-webkit-min-device-pixel-ratio: 2) {
+        //   background-image: url('assets/toggl-logo-white@2x.png')
+        // }
       }
     }
   }

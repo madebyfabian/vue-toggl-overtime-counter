@@ -2,8 +2,8 @@
   <div>
     <img 
       class="toggl-img"
-      src="../assets/toggl-logo-white-red-big.png" 
-      srcset="../assets/toggl-logo-white-red-big@2x.png 2x">
+      src="@/assets/toggl-logo-white-red-big.png" 
+      srcset="@/assets/toggl-logo-white-red-big@2x.png 2x">
 
     <!-- <transition name="slide">
       <AlertBox icon="😢" type="error" v-if="authError">
