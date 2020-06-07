@@ -27,6 +27,10 @@
 </script>
 
 <style lang="scss">
+  :root {
+    --color-toggl-brand: #E24F54;
+  }
+
   body {
     margin: 0;
     padding: 0;

@@ -10,7 +10,14 @@
 
     <form @submit.prevent="handleSubmit" class="auth-form">
       <section class="continue-with-toggl">
-        <Button class="continue-with-toggl__button" @click.native="$router.push({ name: 'AuthWithToggl' })" />
+        <Button 
+          class="continue-with-toggl__button" 
+          @click.native="$router.push({ name: 'AuthWithToggl' })">
+
+          Weiter mit
+          <img
+            src="@/static/toggl-logo--on-color.svg">
+        </Button>
         <TextDivider>oder</TextDivider>
       </section>
 
@@ -86,30 +93,16 @@
   .continue-with-toggl {
     &__button {
       color: #fff;
-      background: #E01B22;
+      background: var(--color-toggl-brand);
       margin-top: 0;
       display: inline-flex;
       justify-content: center;
       align-items: center;
+    }
 
-      &::before {
-        content: 'Weiter mit'
-      }
-
-      &::after {
-        display: inline-block;
-        margin-left: 8px;
-        content: '';
-        height: 24px;
-        width: 80px;
-        background-size: contain;
-        background-repeat: no-repeat;
-        background-image: url('../assets/toggl-logo-white@2x.png');
-        
-        @media screen and (-webkit-min-device-pixel-ratio: 2) {
-          background-image: url('../assets/toggl-logo-white@2x.png')
-        }
-      }
+    img {
+      height: 24px;
+      margin-left: 8px;
     }
   }
 </style>

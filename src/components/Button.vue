@@ -63,6 +63,7 @@
     font-weight: 600;
     position: relative;
     cursor: pointer;
+    user-select: none;
     transition: opacity 150ms ease, transform 150ms ease, box-shadow 150ms ease;
 
     .loading-spinner {

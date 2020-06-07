@@ -1,33 +1,36 @@
 <template>
   <div>
-    <img 
-      class="toggl-img"
-      src="@/assets/toggl-logo-white-red-big.png" 
-      srcset="@/assets/toggl-logo-white-red-big@2x.png 2x">
+    <img src="@/static/toggl-logo--on-dark.svg">
 
-    <!-- <transition name="slide">
+    <p>Melde dich mit deinem <br>toggl-Account an.</p>
+
+    <transition name="slide">
       <AlertBox icon="😢" type="error" v-if="authError">
         Deine E-Mail und oder das Passwort ist leider falsch.
       </AlertBox>
     </transition>
       
     <form @submit.prevent="handleSubmit" class="auth-form">
-      <input type="password" v-model="user.password" placeholder="Passwort" required>
-      <router-link :to="{ name: 'AuthPasswordLost', params: { email: user.email } }" class="link--password-lost">Vergessen?</router-link>
+      <input type="email" v-model="user.email" placeholder="Toggl-E-Mail-Adresse" required>
+      <input type="password" v-model="user.password" placeholder="Toggl-Passwort" required>
 
       <div class="button-stack">
-        <Button type="submit" :isLoading="isLoading">Anmelden</Button>
+        <Button type="submit" class="button--toggl-branded" :isLoading="isLoading">Weiter &rarr;</Button>
         <Button buttonType="secondary" @click.native="$router.push({ name: 'Auth' })">Zurück</Button>
       </div>
-    </form> -->
-    Under construction
+    </form>
   </div>
 </template>
 
 <style lang="scss" scoped>
-  .toggl-img {
+  img {
     height: 40px;
-    margin-bottom: 40px;
+    margin: 0 auto 40px;
+  }
+
+  .button--toggl-branded {
+    color: #fff;
+    background: var(--color-toggl-brand);
   }
 </style>
 
@@ -36,6 +39,9 @@
 
   import Button from '../components/Button'
   import AlertBox from '../components/AlertBox'
+
+  import TogglAPI from '../functions/TogglAPI'
+  import LocalStorageSignupData from '../functions/localstorage-signup-data'
 
   export default {
     name: 'AuthSigin',
@@ -51,19 +57,28 @@
       isLoading: false
     }),
 
-    created() {
-      this.user.email = this.$route.params?.email
-    },
-
     methods: {
       async handleSubmit() {
         this.isLoading = true
 
         try {
-          const loginResponse = await auth.login(this.user.email, this.user.password, true)
-          this.$router.push({ name: 'Dashboard' })
+          const data = await TogglAPI.getUserData({ username: this.user.email, password: this.user.password })
+
+          const apiToken = data?.data?.api_token
+          if (!apiToken)
+            throw new Error('Error authenticating you at Toggl.')
+
+          // Now check, if the current account is already singed up
+
+
+          // LocalStorageSignupData.set({ togglUserData: data.data })
+
+          // console.log(LocalStorageSignupData.get())
+
+          // this.$router.push({ name: 'Dashboard' })
             
         } catch (error) {
+          console.error(error)
           this.authError = true
         }
 

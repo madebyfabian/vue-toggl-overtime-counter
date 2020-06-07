@@ -17,12 +17,12 @@ console.log()
 export default class TogglAPI {
   /**
    * Get current user data.
+   * @param {object} authOptions An object with auth infos, e.g. { user: 'x@y.com', password: 'xyz' }
    * @see https://github.com/toggl/toggl_api_docs/blob/master/chapters/users.md#get-current-user-data
    */
-  static async getUserData() {
-    return await this.#get('/me')
+  static async getUserData( authOptions = null ) {
+    return await this.#get('/me', { Authorization: authOptions })
   }
-
 
 
   /**
@@ -85,9 +85,10 @@ export default class TogglAPI {
    */
   static async #get( path, options = null ) {
     try {
-      const baseUrl = options?.isReportsAPI ? config.baseUrlReportsAPI : config.baseUrl,
-            url     = new URL(baseUrl + path),
-            params  = options?.params || {}
+      const baseUrl     = options?.isReportsAPI ? config.baseUrlReportsAPI : config.baseUrl,
+            url         = new URL(baseUrl + path),
+            params      = options?.params || {},
+            authOptions = options?.Authorization
 
       if (options?.isReportsAPI) {
         // Use Reports API (https://github.com/toggl/toggl_api_docs/blob/master/reports.md)
@@ -107,10 +108,17 @@ export default class TogglAPI {
 
       Object.keys(params).forEach(key => url.searchParams.append(key, params[key]))
 
+      // Check if "Authorization" is set in the options object.
+      let AuthorizationHeader
+      if (!authOptions)
+        AuthorizationHeader = this.#APITokenString
+      else 
+        AuthorizationHeader = btoa(`${authOptions.username}:${authOptions.password}`)
+      
       const result = await fetch(url, {
         method: 'GET',
         headers: new Headers({
-          Authorization: `Basic ${this.#APITokenString}`
+          Authorization: `Basic ${AuthorizationHeader}`
         })
       })
 

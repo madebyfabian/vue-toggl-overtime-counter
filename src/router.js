@@ -25,16 +25,16 @@ const routes = [
   {
     path: '/auth',
     redirect: { name: 'Auth' },
-    beforeEnter: async (to, from, next) => {
-      if (!auth.currentUser()) next()
-      else next({ name: 'Dashboard' })
-    },
     component: EmptyRouterView,
 
     children: [
       {
         path: 'identify', 
         name: 'Auth',
+        beforeEnter: async (to, from, next) => {
+          if (!auth.currentUser()) next()
+          else next({ name: 'Dashboard' })
+        },
         component: () => import(/* webpackChunkName: "Auth" */ './views/Auth.vue')
       },
 
@@ -61,6 +61,7 @@ const routes = [
         component: () => import(/* webpackChunkName: "AuthSignout" */ './views/AuthSignout.vue'),
 
         beforeEnter: async (to, from, next) => {
+          console.log('ok')
           const user = auth.currentUser()
           if (!user) 
             next({ name: 'Auth' })
