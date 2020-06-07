@@ -1,9 +1,11 @@
 <template>
   <div>
-    <h1>Willkommen zurück!</h1>
-    <p class="email-value">{{ user.email }}</p>
+    <img 
+      class="toggl-img"
+      src="../assets/toggl-logo-white-red-big.png" 
+      srcset="../assets/toggl-logo-white-red-big@2x.png 2x">
 
-    <transition name="slide">
+    <!-- <transition name="slide">
       <AlertBox icon="😢" type="error" v-if="authError">
         Deine E-Mail und oder das Passwort ist leider falsch.
       </AlertBox>
@@ -17,13 +19,15 @@
         <Button type="submit" :isLoading="isLoading">Anmelden</Button>
         <Button buttonType="secondary" @click.native="$router.push({ name: 'Auth' })">Zurück</Button>
       </div>
-    </form>
+    </form> -->
+    Under construction
   </div>
 </template>
 
 <style lang="scss" scoped>
-  .email-value {
-    color: rgba(#fff, .5);
+  .toggl-img {
+    height: 40px;
+    margin-bottom: 40px;
   }
 </style>
 

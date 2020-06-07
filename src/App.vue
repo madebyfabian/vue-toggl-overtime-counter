@@ -176,6 +176,12 @@
     }
   }
 
+  .button-stack {
+    button:not(:first-child) {
+      margin-top: 24px;
+    }
+  }
+
   .button-group {
     display: flex;
     

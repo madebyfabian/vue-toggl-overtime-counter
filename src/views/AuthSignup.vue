@@ -15,16 +15,20 @@
     </transition>
 
     <form @submit.prevent="handleSubmit" class="auth-form">
+      <section class="continue-with-toggl">
+        <Button buttonType="continue-with-toggl" @click.native="$router.push({ name: 'AuthWithToggl', query: { test: true }  })" />
+        <TextDivider>oder</TextDivider>
+      </section>
+
       <input type="email" v-model="user.email" placeholder="E-Mail-Adresse" required>
-      <input type="email" v-model="user.emailRepeat" placeholder="E-Mail-Adresse wiederholen" required>
       <input type="password" v-model="user.password" placeholder="Passwort" required>
 
-      <Button type="submit" :isLoading="isLoading">Konto erstellen</Button>
+      <Button type="submit" buttonType="secondary" :isLoading="isLoading">Konto erstellen</Button>
     </form>
 
     <div class="link-with-text">
       Du hast schon ein Konto?
-      <router-link :to="{ name: 'AuthSignin' }">Anmelden</router-link>
+      <router-link :to="{ name: 'Auth' }">Anmelden</router-link>
     </div>
   </div>
 </template>
@@ -34,17 +38,17 @@
 
   import Button from '../components/Button'
   import AlertBox from '../components/AlertBox'
+  import TextDivider from '../components/TextDivider'
 
   export default {
     name: 'AuthSignup',
 
-    components: { Button, AlertBox },
+    components: { Button, AlertBox, TextDivider },
 
     data: () => ({
       user: {
         email: '',
-        password: '',
-        emailRepeat: ''
+        password: ''
       },
       isLoading: false,
       signupStatus: 'inProgress'
@@ -56,11 +60,6 @@
         this.signupStatus = 'inProgress'
 
         validresponse: try {
-          if (this.user.email !== this.user.emailRepeat) {
-            this.signupStatus = 'emailsNotEqual'
-            break validresponse
-          }
-
           if (this.user.password.length < 8) {
             this.signupStatus = 'passwordTooShort'
             break validresponse

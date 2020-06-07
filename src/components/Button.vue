@@ -1,10 +1,10 @@
 <template>
   <button 
     class="button" 
-    :type="type || 'button'" 
-    :class="`button--${buttonType || 'primary'}`">
+    :type="type" 
+    :data-button-type="buttonType">
 
-    <LoadingSpinner v-if="isLoading" color="#2F3437" class="loading-spinner" />
+    <LoadingSpinner v-if="isLoading" :color="spinnerColor" class="loading-spinner" />
     <slot v-else/>
   </button>
 </template>
@@ -17,7 +17,34 @@
 
     components: { LoadingSpinner },
 
-    props: [ 'type', 'buttonType', 'isLoading' ]
+    props: {
+      type: {
+        type: String,
+        default: 'button',
+        validator: (value) => {
+          return [ 'button', 'submit', 'reset' ].includes(value)
+        }
+      },
+
+      buttonType: {
+        type: String,
+        default: 'primary',
+        validator: (value) => {
+          return [ 'primary', 'secondary' ].includes(value)
+        }
+      },
+
+      isLoading: {
+        type: Boolean,
+        default: false
+      }
+    },
+
+    computed: {
+      spinnerColor () {
+        return this.buttonType === 'primary' ? '#2F3437' : null
+      }
+    }
   }
 </script>
 
@@ -41,9 +68,10 @@
     .loading-spinner {
       display: inline-block;
       margin-left: 8px;
+      color: #fff;
     }
 
-    &--secondary {
+    &[data-button-type=secondary] {
       color: #C0C5C8; 
       border: 2px solid #454B4E;
       background: transparent;

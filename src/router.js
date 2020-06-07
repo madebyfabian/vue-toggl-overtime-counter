@@ -14,42 +14,47 @@ const routes = [
     component: Dashboard,
 
     beforeEnter: async (to, from, next) => {
-      if (!auth.currentUser()) next({ name: 'AuthSignin' })
+      if (!auth.currentUser()) next({ name: 'Auth' })
       else next()
     }
   },
-
-
-
-
-  {
-    path: '/test',
-    name: 'Test',
-    component: () => import(/* webpackChunkName: "Test" */ './views/Test.vue')
-  },
-
-
-
 
   /**
    * Auth
    */
   {
     path: '/auth',
-    redirect: { name: 'AuthSignin' },
+    redirect: { name: 'Auth' },
+    beforeEnter: async (to, from, next) => {
+      if (!auth.currentUser()) next()
+      else next({ name: 'Dashboard' })
+    },
     component: EmptyRouterView,
 
     children: [
+      {
+        path: 'identify', 
+        name: 'Auth',
+        component: () => import(/* webpackChunkName: "Auth" */ './views/Auth.vue')
+      },
+
       {
         path: 'signin', 
         name: 'AuthSignin',
         component: () => import(/* webpackChunkName: "AuthSignin" */ './views/AuthSignin.vue'),
 
         beforeEnter: async (to, from, next) => {
-          if (!auth.currentUser()) next()
-          else next({ name: 'Dashboard' })
+          if (to.params?.email) next()
+          else next({ name: 'Auth' })
         }
       },
+
+      {
+        path: 'toggl',
+        name: 'AuthWithToggl',
+        component: () => import(/* webpackChunkName: "AuthWithToggl" */ './views/AuthWithToggl.vue')
+      },
+
       {
         path: 'signout',
         name: 'AuthSignout',
@@ -58,18 +63,20 @@ const routes = [
         beforeEnter: async (to, from, next) => {
           const user = auth.currentUser()
           if (!user) 
-            next({ name: 'AuthSignin' })
+            next({ name: 'Auth' })
           else 
             user.logout()
               .then(response => next())
               .catch(error => console.error("Failed to logout user: %o", error))
         }
       },
+
       {
         path: 'password-lost',
         name: 'AuthPasswordLost',
         component: () => import(/* webpackChunkName: "AuthPasswordLost" */ './views/AuthPasswordLost.vue')
       },
+
       {
         path: 'signup', 
         redirect: { name: 'AuthSignup' },
@@ -92,7 +99,7 @@ const routes = [
             component: EmptyRouterView,
 
             beforeEnter: async (to, from, next) => {
-              if (!auth.currentUser()) next({ name: 'AuthSignin' })
+              if (!auth.currentUser()) next({ name: 'Auth' })
               else next()
             },
 
@@ -126,10 +133,16 @@ const routes = [
           }
         ]
       } // end /auth/signup
+
     ]
   }, // end /auth
 
 
+  // Catch 404
+  {
+    path: '*',
+    redirect: { name: 'Dashboard' }
+  }
 ]
 
 const router = new VueRouter({
