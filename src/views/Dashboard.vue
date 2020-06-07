@@ -12,7 +12,7 @@
       Du hast insgesamt <strong>13 Überstunden</strong> im Jahr 2020! 🤓
       <router-link class="bottom-banner__link" to="/details">Ansehen →</router-link>
     </div> -->
-    <br><br><br>
+    <br>
     <router-link :to="{ name: 'AuthSignout' }">Logout</router-link>
   </div>
 </template>
@@ -57,21 +57,21 @@
   import dayjs from 'dayjs'
   import 'dayjs/locale/de'
 
-  import relativeTime from 'dayjs/plugin/relativeTime'
-  dayjs.extend(relativeTime)
+  // import relativeTime from 'dayjs/plugin/relativeTime'
+  // dayjs.extend(relativeTime)
 
   dayjs.locale('de')
 
-  import duration from 'dayjs/plugin/duration'
-  dayjs.extend(duration)
+  // import duration from 'dayjs/plugin/duration'
+  // dayjs.extend(duration)
 
   import auth from '../functions/gotrue-auth'
+  import TogglAPI from '../functions/TogglAPI'
 
   import RefreshButton from '../components/RefreshButton'
   import WeekList from '../components/WeekList'
   import BigHeadline from '../components/BigHeadline'
 
-  import TogglAPI from '../functions/TogglAPI'
 
   export default {
     name: 'Dashboard',
@@ -91,115 +91,75 @@
     async created() {
       await this.fetchApiResponse()
 
-      const myWorkspace = 2123160
 
-      console.log('workspace projects', await TogglAPI.getWorkspaceProjects(myWorkspace))
-      console.log('workspace clients', await TogglAPI.getWorkspaceClients(myWorkspace))
+
+      // const startOfYear = dayjs().startOf('year')
+      // const today = dayjs()
+
+      // const duration = dayjs.duration(today.diff(startOfYear)).asWeeks()
+
+      // console.log(Math.floor(duration), 'Wochen')
     },
 
     methods: {
-      buildAPIUrl(pathname, data) {
-        const url = new URL('https://toggl.com/reports/api/v2')
-        url.pathname += '/' + pathname
-        Object.keys(data).forEach((key, i) => {
-          url.searchParams.append(key, Object.values(data)[i])
-        })
-        return url.href 
-      },
-
       roundHalf(num) {
         return Math.round(num * 2) / 2
       },
 
       async fetchApiResponse() {
         try {
-          // const startOfYear = dayjs().startOf('year')
-          // const today = dayjs()
-
-          // const duration = dayjs.duration(today.diff(startOfYear)).asWeeks()
-
-          // console.log(Math.floor(duration), 'Wochen')
-
-          
-
-
           this.isLoading = true
 
-          // Call TOGGL API to get the entries for this week.
-          const url = this.buildAPIUrl('weekly', {
-            'user_agent': 'hello@madebyfabian.com',
-            'workspace_id': 2123160,
-            'since': '2020-05-18',
-            'project_ids': 155439157
-          })
-
-          const SECRET_API_KEY = process.env?.VUE_APP_API_KEY
-          if (!SECRET_API_KEY)
-            throw new Error('Please provide a VUE_APP_API_KEY environment variable!')
-
-          const resultApi = await fetch(url, {
-            method: 'GET',
-            headers: new Headers({
-              'Authorization': `Basic ${btoa(`${process.env.VUE_APP_API_KEY}:api_token`)}`
-            })
-          })
-
-          if (!resultApi)
-            throw new Error('Error with the API request')
-
-          const resultJSON = await resultApi.json()
-          if (!resultJSON)
-            throw new Error('Error parsing JSON from API')
-
-          const result = resultJSON?.week_totals
+          const resultApi = await TogglAPI.getWeeklyReport(dayjs().startOf('week').format('YYYY-MM-DD'))
+          const result = resultApi?.week_totals
           if (!result)
             throw new Error('Something is wrong with the API response')
 
-
-          
-          const settings = {
-            businessDays: [
-              { dayId: 1, hoursToWork: 8 },
-              { dayId: 2, hoursToWork: 8 },
-              { dayId: 3, hoursToWork: 8 },
-              { dayId: 4, hoursToWork: 8 },
-              { dayId: 5, hoursToWork: 8 },
-              { dayId: 6, hoursToWork: null },
-              { dayId: 7, hoursToWork: null },
-            ]
-          }
-
+          const userSetting_businessDays = this.user?.user_metadata?.businessDays
+          if (!userSetting_businessDays || userSetting_businessDays.length !== 7)
+            throw new Error('User didn\'t setuped the business days!')
 
           // Now, let's look what weekday it's currently.
           const currentWeekdayID = dayjs().day()
-          
-          
-          const weekdaysToLoopThrough = settings.businessDays.filter(entry => !!entry.hoursToWork)
-          let weekStatus = 0
+
+          let returnedData = {
+            weekStatus: 0,
+            details: []
+          }
 
           // Loop through a regular business-week
-          weekdaysToLoopThrough.forEach((weekday, i) => {
-            weekday.status = null
-            weekday.label = dayjs().day(weekday.dayId).format('dd')
-            weekday.isToday = weekday.dayId === currentWeekdayID
+          for (let i = 1; i < 8; i++) {
+            const hoursToWork = userSetting_businessDays[i - 1]
+            if (!hoursToWork)
+              continue
 
-            const realWorkedHours = this.roundHalf(result[i] / 1000 / 60 / 60)
+            // If this day is a business day for the user 
+            let weekday = { 
+              dayId: i,
+              status: null,
+              label: dayjs().day(i).format('dd'),
+              isToday: i === currentWeekdayID
+            }
 
-            if (weekday.dayId >= currentWeekdayID)
-              return
-
-            weekday.status = (weekday.hoursToWork - realWorkedHours) * -1
-            weekStatus += weekday.status
-          })
+            if (weekday.dayId <= currentWeekdayID) {
+              const realWorkedHours = this.roundHalf(result[i - 1] / 1000 / 60 / 60)
+              weekday.status = (hoursToWork - realWorkedHours) * -1
+              returnedData.weekStatus += weekday.status
+            }
+            
+            returnedData.details.push(weekday)
+          }
 
           this.weekListData = {
-            weekStatus: this.roundHalf(weekStatus),
-            details: weekdaysToLoopThrough
+            ...returnedData,
+            weekStatus: this.roundHalf(returnedData.weekStatus),
           }
+
+          console.log(this.weekListData)
 
           this.isLoading = false
         } catch (error) {
-          console.log(error.message)
+          console.error(error.message)
         }
       }
     }

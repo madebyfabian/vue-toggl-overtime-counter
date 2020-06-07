@@ -1,7 +1,14 @@
 import auth from './gotrue-auth'
 
+const urlPrepend = process.env.NODE_ENV.toLowerCase() === 'production' ? 'https://cors-anywhere.herokuapp.com/' : '' 
 
-const config = { BASE_URL: 'https://cors-anywhere.herokuapp.com/https://www.toggl.com/api/v8' }
+
+const config = { 
+  baseUrl: urlPrepend + 'https://www.toggl.com/api/v8',
+  baseUrlReportsAPI: urlPrepend + 'https://toggl.com/reports/api/v2'
+}
+
+console.log()
 
 
 /**
@@ -19,6 +26,23 @@ export default class TogglAPI {
 
 
   /**
+   * Returns a summary of tracked entries within the last 7 days
+   * @param {string} since ISO 8601 date (YYYY-MM-DD) format. Defaults to today - 6 days.
+   */
+  static async getWeeklyReport( since = null ) {
+    let params = {}
+    if (since)
+      params.since = since
+
+    return await this.#get('/weekly', { 
+      isReportsAPI: true, 
+      params
+    })
+  }
+
+
+
+  /**
    * Get data about all the workspaces where the token owner belongs to.
    * @see https://github.com/toggl/toggl_api_docs/blob/master/chapters/workspaces.md#get-workspaces
    */
@@ -27,20 +51,14 @@ export default class TogglAPI {
   }
 
   /**
-   * Get single workspace.
-   * @see https://github.com/toggl/toggl_api_docs/blob/master/chapters/workspaces.md#get-single-workspace
-   * @param {number} workspaceId The ID of the workspace.
-   */
-  static async getWorkspace( workspaceId ) {
-    return await this.#get(`/workspaces/${workspaceId}`)
-  }
-
-  /**
    * Get workspace projects.
    * @see https://github.com/toggl/toggl_api_docs/blob/master/chapters/workspaces.md#get-workspace-projects
    * @param {number} workspaceId The ID of the workspace.
    */
-  static async getWorkspaceProjects( workspaceId ) {
+  static async getWorkspaceProjects( workspaceId = null ) {
+    if (!workspaceId)
+      workspaceId = auth.currentUser().user_metadata?.trackedWorkspace
+
     return await this.#get(`/workspaces/${workspaceId}/projects`)
   }
 
@@ -49,7 +67,10 @@ export default class TogglAPI {
    * @see https://github.com/toggl/toggl_api_docs/blob/master/chapters/workspaces.md#get-workspace-clients
    * @param {number} workspaceId The ID of the workspace.
    */
-  static async getWorkspaceClients( workspaceId ) {
+  static async getWorkspaceClients( workspaceId = null ) {
+    if (!workspaceId)
+      workspaceId = auth.currentUser().user_metadata?.trackedWorkspace
+
     return await this.#get(`/workspaces/${workspaceId}/clients`)
   }
 
@@ -60,16 +81,44 @@ export default class TogglAPI {
   /**
    * HTTP GET with the Authorization Headers
    * @param {string} path The API URL Path (e.g. "/me")
+   * @param {object} options e.g. { isReportsAPI: true, params: { key: value, ... } }
    */
-  static async #get( path ) {
-    const result = await fetch(config.BASE_URL + path, { 
-      method: 'GET', 
-      // mode: 'no-cors', // 'cors' by default
-      headers: new Headers({
-        'Authorization': `Basic ${this.#APITokenString}`
+  static async #get( path, options = null ) {
+    try {
+      const baseUrl = options?.isReportsAPI ? config.baseUrlReportsAPI : config.baseUrl,
+            url     = new URL(baseUrl + path),
+            params  = options?.params || {}
+
+      if (options?.isReportsAPI) {
+        // Use Reports API (https://github.com/toggl/toggl_api_docs/blob/master/reports.md)
+        const user = auth.currentUser()
+        const trackedProjects = user?.user_metadata?.trackedProjects
+        if (!trackedProjects || !trackedProjects.length)
+          throw new Error('No tracked projects defined by the user.')
+
+        const workspaceId = user?.user_metadata?.trackedWorkspace
+        if (!workspaceId)
+          throw new Error('No workspace ID defined by the user.')
+
+        params.user_agent = 'https://github.com/madebyfabian/overtimetrackr',
+        params.project_ids = trackedProjects.join()
+        params.workspace_id = workspaceId
+      }
+
+      Object.keys(params).forEach(key => url.searchParams.append(key, params[key]))
+
+      const result = await fetch(url, {
+        method: 'GET',
+        headers: new Headers({
+          Authorization: `Basic ${this.#APITokenString}`
+        })
       })
-    })
-    return this.#handleAPIResponse(result)
+
+      return this.#handleAPIResponse(result)
+
+    } catch (error) {
+      console.error(error)
+    }
   }
 
 
