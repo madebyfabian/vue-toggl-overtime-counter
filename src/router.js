@@ -12,11 +12,7 @@ const routes = [
     path: '/',
     name: 'Dashboard',
     component: Dashboard,
-
-    beforeEnter: async (to, from, next) => {
-      if (!auth.currentUser()) next({ name: 'AuthSignin' })
-      else next()
-    }
+    meta: { requiresAuth: true }
   },
 
   /**
@@ -90,11 +86,7 @@ const routes = [
             path: 'account-config',
             redirect: { name: 'AuthSignup__05_workspaces' },
             component: EmptyRouterView,
-
-            beforeEnter: async (to, from, next) => {
-              if (!auth.currentUser()) next({ name: 'AuthSignin' })
-              else next()
-            },
+            meta: { requiresAuth: true },
 
             children: [
               {
@@ -133,6 +125,13 @@ const routes = [
 const router = new VueRouter({
   routes,
   mode: 'history'
+})
+
+router.beforeEach(async (from, to, next) => {
+  if (from.matched.some(record => record.meta.requiresAuth) && !(auth.currentUser())) 
+    next({ name: 'AuthSignin' })
+  else
+    next()
 })
 
 export default router
