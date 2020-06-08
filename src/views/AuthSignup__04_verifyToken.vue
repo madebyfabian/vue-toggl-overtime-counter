@@ -28,8 +28,6 @@
   import Button from '../components/Button'
 
   export default {
-    name: 'AuthSignup__verifyToken',
-
     components: { Button, AlertBox },
 
     data: () => ({
@@ -40,10 +38,6 @@
       tokenIsValid: null
     }),
 
-    created() {
-      console.log(this.$route.params)
-    },
-
     methods: {
       async handleSubmitTokenVerify() {
         this.isLoading = true
@@ -51,7 +45,7 @@
         // Now confirm user's email via the token he provided
         try {
           await auth.confirm(this.userConfirmation.token, true)
-          this.$router.push({ name: 'AuthSignup__accountConfig__1', params: this.$route.params })
+          this.$router.push({ name: 'AuthSignup__05_workspaces' })
           
         } catch (error) {
           console.error(error)

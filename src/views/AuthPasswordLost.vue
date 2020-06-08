@@ -62,8 +62,6 @@
   import AlertBox from '../components/AlertBox'
 
   export default {
-    name: 'AuthPasswordLost',
-
     components: { Button, AlertBox },
 
     data: () => ({

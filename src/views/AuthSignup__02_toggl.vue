@@ -16,7 +16,7 @@
 
       <div class="button-stack">
         <Button type="submit" class="button--toggl-branded" :isLoading="isLoading">Weiter &rarr;</Button>
-        <Button buttonType="secondary" @click.native="$router.push({ name: 'Auth' })">Zurück</Button>
+        <Button buttonType="secondary" @click.native="$router.push({ name: 'AuthSignup' })">Zurück</Button>
       </div>
     </form>
   </div>
@@ -36,16 +36,14 @@
 
 <script>
   import auth from '../functions/gotrue-auth'
+  import TogglAPI from '../functions/TogglAPI'
+  import LocalStorageSignupData from '../functions/localstorage-signup-data'
 
   import Button from '../components/Button'
   import AlertBox from '../components/AlertBox'
 
-  import TogglAPI from '../functions/TogglAPI'
-  import LocalStorageSignupData from '../functions/localstorage-signup-data'
 
   export default {
-    name: 'AuthSigin',
-
     components: { Button, AlertBox },
 
     data: () => ({
@@ -68,14 +66,9 @@
           if (!apiToken)
             throw new Error('Error authenticating you at Toggl.')
 
-          // Now check, if the current account is already singed up
+          LocalStorageSignupData.set({ togglUserData: data.data })
 
-
-          // LocalStorageSignupData.set({ togglUserData: data.data })
-
-          // console.log(LocalStorageSignupData.get())
-
-          // this.$router.push({ name: 'Dashboard' })
+          this.$router.push({ name: 'AuthSignup__createAccount' })
             
         } catch (error) {
           console.error(error)

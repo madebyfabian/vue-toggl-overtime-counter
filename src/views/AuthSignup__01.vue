@@ -1,37 +1,44 @@
 <template>
   <div>
     <h1>Konto erstellen</h1>
-    
-    <transition name="slide">
-      <AlertBox icon="❌" type="error" v-if="signupStatus === 'error'">
-        Fehler bei der Registrierung, versuch es mit einer anderen E-Mail-Adresse!
-      </AlertBox>
-      <AlertBox icon="❌" type="error" v-if="signupStatus === 'emailsNotEqual'">
-        Die angegebenen E-Mail-Adressen stimmen nicht überein.
-      </AlertBox>
-      <AlertBox icon="🙈" type="error" v-if="signupStatus === 'passwordTooShort'">
-        Dein Passwort sollte mindestens 8 Zeichen enthalten.
-      </AlertBox>
-    </transition>
 
-    <form @submit.prevent="handleSubmit" class="auth-form">
+    <form class="auth-form">
       <section class="continue-with-toggl">
-        <Button buttonType="continue-with-toggl" @click.native="$router.push({ name: 'AuthWithToggl', query: { test: true }  })" />
-        <TextDivider>oder</TextDivider>
+        <Button 
+          class="continue-with-toggl__button" 
+          @click.native="$router.push({ name: 'AuthSignup__toggl' })">
+
+          Weiter mit
+          <img
+            src="@/static/toggl-logo--on-color.svg">
+        </Button>
       </section>
-
-      <input type="email" v-model="user.email" placeholder="E-Mail-Adresse" required>
-      <input type="password" v-model="user.password" placeholder="Passwort" required>
-
-      <Button type="submit" buttonType="secondary" :isLoading="isLoading">Konto erstellen</Button>
     </form>
 
     <div class="link-with-text">
       Du hast schon ein Konto?
-      <router-link :to="{ name: 'Auth' }">Anmelden</router-link>
+      <router-link :to="{ name: 'AuthSignin' }">Anmelden</router-link>
     </div>
   </div>
 </template>
+
+<style lang="scss" scoped>
+  .continue-with-toggl {
+    &__button {
+      color: #fff;
+      background: var(--color-toggl-brand);
+      margin-top: 0;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    img {
+      height: 24px;
+      margin-left: 8px;
+    }
+  }
+</style>
 
 <script>
   import auth from '../functions/gotrue-auth'
@@ -41,8 +48,6 @@
   import TextDivider from '../components/TextDivider'
 
   export default {
-    name: 'AuthSignup',
-
     components: { Button, AlertBox, TextDivider },
 
     data: () => ({

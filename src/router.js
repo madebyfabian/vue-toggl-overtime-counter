@@ -14,7 +14,7 @@ const routes = [
     component: Dashboard,
 
     beforeEnter: async (to, from, next) => {
-      if (!auth.currentUser()) next({ name: 'Auth' })
+      if (!auth.currentUser()) next({ name: 'AuthSignin' })
       else next()
     }
   },
@@ -24,35 +24,14 @@ const routes = [
    */
   {
     path: '/auth',
-    redirect: { name: 'Auth' },
+    redirect: { name: 'AuthSignin' },
     component: EmptyRouterView,
 
     children: [
       {
-        path: 'identify', 
-        name: 'Auth',
-        beforeEnter: async (to, from, next) => {
-          if (!auth.currentUser()) next()
-          else next({ name: 'Dashboard' })
-        },
-        component: () => import(/* webpackChunkName: "Auth" */ './views/Auth.vue')
-      },
-
-      {
         path: 'signin', 
         name: 'AuthSignin',
-        component: () => import(/* webpackChunkName: "AuthSignin" */ './views/AuthSignin.vue'),
-
-        beforeEnter: async (to, from, next) => {
-          if (to.params?.email) next()
-          else next({ name: 'Auth' })
-        }
-      },
-
-      {
-        path: 'toggl',
-        name: 'AuthWithToggl',
-        component: () => import(/* webpackChunkName: "AuthWithToggl" */ './views/AuthWithToggl.vue')
+        component: () => import(/* webpackChunkName: "AuthSignin" */ './views/AuthSignin.vue')
       },
 
       {
@@ -61,10 +40,9 @@ const routes = [
         component: () => import(/* webpackChunkName: "AuthSignout" */ './views/AuthSignout.vue'),
 
         beforeEnter: async (to, from, next) => {
-          console.log('ok')
           const user = auth.currentUser()
           if (!user) 
-            next({ name: 'Auth' })
+            next({ name: 'AuthSignin' })
           else 
             user.logout()
               .then(response => next())
@@ -87,48 +65,54 @@ const routes = [
           {
             path: '',
             name: 'AuthSignup',
-            component: () => import(/* webpackChunkName: "AuthSignup" */ './views/AuthSignup.vue'),
+            component: () => import(/* webpackChunkName: "AuthSignup" */ './views/AuthSignup__01.vue'),
           },
+
+          {
+            path: 'toggl',
+            name: 'AuthSignup__toggl',
+            component: () => import(/* webpackChunkName: "AuthWithToggl" */ './views/AuthSignup__02_toggl.vue')
+          },
+
+          {
+            path: 'create-account',
+            name: 'AuthSignup__createAccount',
+            component: () => import(/* webpackChunkName: "AuthSignup__createAccount" */ './views/AuthSignup__03_createAccount.vue'),
+          },
+
           {
             path: 'verify-token',
             name: 'AuthSignup__verifyToken',
-            component: () => import(/* webpackChunkName: "AuthSignup__verifyToken" */ './views/AuthSignup__verifyToken.vue'),
+            component: () => import(/* webpackChunkName: "AuthSignup__verifyToken" */ './views/AuthSignup__04_verifyToken.vue'),
           },
+          
           {
-            path: '/auth/signup/account-config',
-            redirect: { name: 'AuthSignup__accountConfig__1' },
+            path: 'account-config',
+            redirect: { name: 'AuthSignup__05_workspaces' },
             component: EmptyRouterView,
 
             beforeEnter: async (to, from, next) => {
-              if (!auth.currentUser()) next({ name: 'Auth' })
+              if (!auth.currentUser()) next({ name: 'AuthSignin' })
               else next()
             },
 
             children: [
               {
-                path: '/auth/signup/account-config/1',
-                name: 'AuthSignup__accountConfig__1',
-                component: () => import(/* webpackChunkName: "AuthSignup__accountConfig__1" */ './views/AuthSignup__accountConfig__1.vue')
+                path: 'workspaces',
+                name: 'AuthSignup__05_workspaces',
+                component: () => import(/* webpackChunkName: "AuthSignup__05_workspaces" */ './views/AuthSignup__05_workspaces.vue')
               },
+
               {
-                path: '/auth/signup/account-config/2',
-                name: 'AuthSignup__accountConfig__2',
-                component: () => import(/* webpackChunkName: "AuthSignup__accountConfig__2" */ './views/AuthSignup__accountConfig__2.vue')
+                path: 'projects',
+                name: 'AuthSignup__06_projects',
+                component: () => import(/* webpackChunkName: "AuthSignup__06_projects" */ './views/AuthSignup__06_projects.vue')
               },
+
               {
-                path: '/auth/signup/account-config/3',
-                name: 'AuthSignup__accountConfig__3',
-                component: () => import(/* webpackChunkName: "AuthSignup__accountConfig__3" */ './views/AuthSignup__accountConfig__3.vue')
-              },
-              {
-                path: '/auth/signup/account-config/4',
-                name: 'AuthSignup__accountConfig__4',
-                component: () => import(/* webpackChunkName: "AuthSignup__accountConfig__4" */ './views/AuthSignup__accountConfig__4.vue')
-              },
-              {
-                path: '/auth/signup/account-config/5',
-                name: 'AuthSignup__accountConfig__5',
-                component: () => import(/* webpackChunkName: "AuthSignup__accountConfig__5" */ './views/AuthSignup__accountConfig__5.vue')
+                path: 'business-days',
+                name: 'AuthSignup__07_businessDays',
+                component: () => import(/* webpackChunkName: "AuthSignup__07_businessDays" */ './views/AuthSignup__07_businessDays.vue')
               }
             ]
           }

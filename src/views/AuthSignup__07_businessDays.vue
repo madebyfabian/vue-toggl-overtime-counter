@@ -50,7 +50,7 @@
       <p class="counter"><strong>{{calculatedHours}}</strong> Stunden gesamt/Woche</p>
 
       <div class="button-group">
-        <Button buttonType="secondary" @click.native="$router.push({ name: 'AuthSignup__accountConfig__4' })">&larr; Zurück</Button>
+        <Button buttonType="secondary" @click.native="$router.push({ name: 'AuthSignup__06_projects' })">&larr; Zurück</Button>
         <Button type="submit" :isLoading="isLoading">Weiter &rarr;</Button>
       </div>
     </form>
@@ -98,8 +98,6 @@
   import Button from '../components/Button'
 
   export default {
-    name: 'AuthSignup__accountConfig__5',
-
     components: { Button, AlertBox },
 
     data: () => ({

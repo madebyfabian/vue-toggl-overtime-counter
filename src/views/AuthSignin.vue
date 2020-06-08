@@ -1,8 +1,6 @@
 <template>
   <div>
-    <h1>Willkommen zurück!</h1>
-    <p class="email-value">{{ user.email }}</p>
-
+    <h1>Anmelden</h1>
     <transition name="slide">
       <AlertBox icon="😢" type="error" v-if="authError">
         Deine E-Mail und oder das Passwort ist leider falsch.
@@ -10,22 +8,19 @@
     </transition>
       
     <form @submit.prevent="handleSubmit" class="auth-form">
+      <input type="email" v-model="user.email" placeholder="E-Mail-Adresse" required>
       <input type="password" v-model="user.password" placeholder="Passwort" required>
       <router-link :to="{ name: 'AuthPasswordLost', params: { email: user.email } }" class="link--password-lost">Vergessen?</router-link>
 
-      <div class="button-stack">
-        <Button type="submit" :isLoading="isLoading">Anmelden</Button>
-        <Button buttonType="secondary" @click.native="$router.push({ name: 'Auth' })">Zurück</Button>
-      </div>
+      <Button type="submit" :isLoading="isLoading">Anmelden</Button>
     </form>
+
+    <div class="link-with-text">
+      Noch nicht registriert?
+      <router-link :to="{ name: 'AuthSignup' }">Konto erstellen</router-link>
+    </div>
   </div>
 </template>
-
-<style lang="scss" scoped>
-  .email-value {
-    color: rgba(#fff, .5);
-  }
-</style>
 
 <script>
   import auth from '../functions/gotrue-auth'
@@ -34,8 +29,6 @@
   import AlertBox from '../components/AlertBox'
 
   export default {
-    name: 'AuthSigin',
-
     components: { Button, AlertBox },
 
     data: () => ({
@@ -44,7 +37,8 @@
         password: ''
       },
       authError: false,
-      isLoading: false
+      isLoading: false,
+      logoutSuccessful: null
     }),
 
     created() {
@@ -53,7 +47,8 @@
 
     methods: {
       async handleSubmit() {
-        this.isLoading = true
+        this.isLoading = true 
+        this.logoutSuccessful = null
 
         try {
           const loginResponse = await auth.login(this.user.email, this.user.password, true)

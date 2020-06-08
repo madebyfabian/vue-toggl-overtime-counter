@@ -25,10 +25,7 @@
       
       <LoadingSpinner class="loading-spinner" v-else />
 
-      <div class="button-group">
-        <Button buttonType="secondary" @click.native="$router.push({ name: 'AuthSignup__accountConfig__2' })">&larr; Zurück</Button>
-        <Button type="submit" :isLoading="isLoading">Weiter &rarr;</Button>
-      </div>
+      <Button type="submit" :isLoading="isLoading">Weiter &rarr;</Button>
     </form>
   </div>
 </template>
@@ -41,17 +38,16 @@
 
 <script>
   import auth from '../functions/gotrue-auth'
+  import TogglAPI from '../functions/TogglAPI'
+  import LocalStorageSignupData from '../functions/localstorage-signup-data'
 
   import AlertBox from '../components/AlertBox'
   import Button from '../components/Button'
   import LoadingSpinner from '../components/LoadingSpinner'
   import InputRadioCard from '../components/InputRadioCard'
 
-  import TogglAPI from '../functions/TogglAPI'
 
   export default {
-    name: 'AuthSignup__accountConfig__3',
-
     components: { Button, AlertBox, LoadingSpinner, InputRadioCard },
 
     data: () => ({
@@ -64,10 +60,9 @@
 
     async created() {
       try {
-        // Get workspaces from step 2.
-        let workspaces = this.$route.props?.workspaces
+        let workspaces = LocalStorageSignupData.get()?.togglUserData?.workspaces
         if (!workspaces) {
-          // Didn't got any workspaces as prop. So fetch them again then.
+          // Didn't got any workspaces. So fetch them again then.
           const userData = await TogglAPI.getUserData()
           workspaces = userData?.data?.workspaces
         } 
@@ -101,7 +96,7 @@
           await user.update({ data: dataToUpdate })
 
           // Redirect to next view
-          this.$router.push({ name: 'AuthSignup__accountConfig__4' })
+          this.$router.push({ name: 'AuthSignup__06_projects' })
 
         } catch (error) {
           this.error = true

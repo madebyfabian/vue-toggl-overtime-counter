@@ -1,8 +1,8 @@
-export default class LocalStorageSignupData {
-  key = 'overtimetrackr:signupData'
+const key = 'overtimetrackr:signupData'
 
+export default class LocalStorageSignupData {
   static get() {
-    return JSON.parse(localStorage.getItem(this.key))
+    return JSON.parse(localStorage.getItem(key))
   }
 
   static set( newData ) {
@@ -13,10 +13,10 @@ export default class LocalStorageSignupData {
     const newDataStr = JSON.stringify({ ...currentData, ...newData })
 
     // Set the new data
-    localStorage.setItem(this.key, newDataStr)
+    localStorage.setItem(key, newDataStr)
   }
   
   static remove() {
-    localStorage.removeItem(this.key)
+    localStorage.removeItem(key)
   }
 }

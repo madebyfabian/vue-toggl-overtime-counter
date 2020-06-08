@@ -74,8 +74,6 @@
 
 
   export default {
-    name: 'Dashboard',
-
     components: {
       RefreshButton,
       WeekList,

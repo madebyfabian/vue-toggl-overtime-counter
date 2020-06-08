@@ -41,7 +41,7 @@
       </div>
 
       <div class="button-group">
-        <Button buttonType="secondary" @click.native="$router.push({ name: 'AuthSignup__accountConfig__3' })">&larr; Zurück</Button>
+        <Button buttonType="secondary" @click.native="$router.push({ name: 'AuthSignup__05_workspaces' })">&larr; Zurück</Button>
         <Button type="submit" :isLoading="isLoading">Weiter &rarr;</Button>
       </div>
     </form>
@@ -84,8 +84,6 @@
   import TogglAPI from '../functions/TogglAPI'
 
   export default {
-    name: 'AuthSignup__accountConfig__4',
-
     components: { Button, AlertBox, LoadingSpinner, InputCheckboxCard },
 
     data: () => ({
@@ -154,7 +152,7 @@
           await user.update({ data: { trackedProjects: this.selectedProjects } })
 
           // Redirect to next view
-          this.$router.push({ name: 'AuthSignup__accountConfig__5' })
+          this.$router.push({ name: 'AuthSignup__07_businessDays' })
 
         } catch (error) {
           this.error = true
