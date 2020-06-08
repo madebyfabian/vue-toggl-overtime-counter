@@ -12,7 +12,10 @@ const routes = [
     path: '/',
     name: 'Dashboard',
     component: Dashboard,
-    meta: { requiresAuth: true }
+    meta: {
+      title: 'Dashboard',
+      requiresAuth: true
+    }
   },
 
   /**
@@ -27,43 +30,55 @@ const routes = [
       {
         path: 'signin', 
         name: 'AuthSignin',
-        component: () => import(/* webpackChunkName: "AuthSignin" */ './views/AuthSignin.vue')
+        component: () => import(/* webpackChunkName: "AuthSignin" */ './views/AuthSignin.vue'),
+        meta: {
+          title: 'Anmelden'
+        }
       },
 
       {
         path: 'password-lost',
         name: 'AuthPasswordLost',
-        component: () => import(/* webpackChunkName: "AuthPasswordLost" */ './views/AuthPasswordLost.vue')
+        component: () => import(/* webpackChunkName: "AuthPasswordLost" */ './views/AuthPasswordLost.vue'),
+        meta: {
+          title: 'Passwort vergessen?'
+        }
       },
 
       {
         path: 'signup', 
         redirect: { name: 'AuthSignup' },
         component: EmptyRouterView,
+        meta: {
+          title: 'Konto erstellen'
+        },
 
         children: [
           {
             path: '',
             name: 'AuthSignup',
-            component: () => import(/* webpackChunkName: "AuthSignup" */ './views/AuthSignup__01.vue'),
+            component: () => import(/* webpackChunkName: "AuthSignup" */ './views/AuthSignup__01.vue')
           },
 
           {
             path: 'toggl',
             name: 'AuthSignup__toggl',
-            component: () => import(/* webpackChunkName: "AuthWithToggl" */ './views/AuthSignup__02_toggl.vue')
+            component: () => import(/* webpackChunkName: "AuthWithToggl" */ './views/AuthSignup__02_toggl.vue'),
+            meta: {
+              title: 'Mit toggl anmelden'
+            }
           },
 
           {
             path: 'create-account',
             name: 'AuthSignup__createAccount',
-            component: () => import(/* webpackChunkName: "AuthSignup__createAccount" */ './views/AuthSignup__03_createAccount.vue'),
+            component: () => import(/* webpackChunkName: "AuthSignup__createAccount" */ './views/AuthSignup__03_createAccount.vue')
           },
 
           {
             path: 'verify-token',
             name: 'AuthSignup__verifyToken',
-            component: () => import(/* webpackChunkName: "AuthSignup__verifyToken" */ './views/AuthSignup__04_verifyToken.vue'),
+            component: () => import(/* webpackChunkName: "AuthSignup__verifyToken" */ './views/AuthSignup__04_verifyToken.vue')
           },
           
           {
@@ -76,19 +91,28 @@ const routes = [
               {
                 path: 'workspaces',
                 name: 'AuthSignup__05_workspaces',
-                component: () => import(/* webpackChunkName: "AuthSignup__05_workspaces" */ './views/AuthSignup__05_workspaces.vue')
+                component: () => import(/* webpackChunkName: "AuthSignup__05_workspaces" */ './views/AuthSignup__05_workspaces.vue'),
+                meta: {
+                  title: 'Deine Workspaces'
+                }
               },
 
               {
                 path: 'projects',
                 name: 'AuthSignup__06_projects',
-                component: () => import(/* webpackChunkName: "AuthSignup__06_projects" */ './views/AuthSignup__06_projects.vue')
+                component: () => import(/* webpackChunkName: "AuthSignup__06_projects" */ './views/AuthSignup__06_projects.vue'),
+                meta: {
+                  title: 'Deine Projekte'
+                }
               },
 
               {
                 path: 'business-days',
                 name: 'AuthSignup__07_businessDays',
-                component: () => import(/* webpackChunkName: "AuthSignup__07_businessDays" */ './views/AuthSignup__07_businessDays.vue')
+                component: () => import(/* webpackChunkName: "AuthSignup__07_businessDays" */ './views/AuthSignup__07_businessDays.vue'),
+                meta: {
+                  title: 'Deine Arbeitszeit'
+                }
               }
             ]
           }
@@ -112,6 +136,13 @@ const router = new VueRouter({
 })
 
 router.beforeEach(async (from, to, next) => {
+  // This goes through the matched routes from last to first, finding the closest route with a title.
+  // eg. if we have /some/deep/nested/route and /some, /deep, and /nested have titles, nested's will be chosen.
+  const nearestRouteWithTitle = from.matched.slice().reverse().find(route => route.meta?.title)
+  const title = nearestRouteWithTitle?.meta.title || ''
+  document.title = `${title ? `${title} – ` : ''}overtimetrackr`
+
+  // Check if this route is protected and is only allowed to access if user is signed in.
   if (from.matched.some(record => record.meta.requiresAuth) && !(auth.currentUser())) 
     next({ name: 'AuthSignin' })
   else
