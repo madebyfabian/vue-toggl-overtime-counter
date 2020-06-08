@@ -10,9 +10,14 @@
       </AlertBox>
     </transition>
       
-    <form @submit.prevent="handleSubmit" class="auth-form">
-      <input type="email" v-model="user.email" placeholder="Toggl-E-Mail-Adresse" required>
-      <input type="password" v-model="user.password" placeholder="Toggl-Passwort" required>
+    <form 
+      @submit.prevent="handleSubmit" 
+      autocomplete="off"
+      data-lpignore="true"
+      class="auth-form">
+
+      <input type="email" v-model="user.email" placeholder="Toggl-E-Mail-Adresse" required autocomplete="off">
+      <input type="password" v-model="user.password" placeholder="Toggl-Passwort" required autocomplete="off">
 
       <div class="button-stack">
         <Button type="submit" class="button--toggl-branded" :isLoading="isLoading">Weiter &rarr;</Button>
