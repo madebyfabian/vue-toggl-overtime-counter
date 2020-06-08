@@ -13,7 +13,7 @@
       <router-link class="bottom-banner__link" to="/details">Ansehen →</router-link>
     </div> -->
     <br>
-    <router-link :to="{ name: 'AuthSignout' }">Logout</router-link>
+    <router-link :to="{ name: 'AuthSignin', query: { signout: true } }">Logout</router-link>
   </div>
 </template>
 

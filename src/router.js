@@ -31,22 +31,6 @@ const routes = [
       },
 
       {
-        path: 'signout',
-        name: 'AuthSignout',
-        component: () => import(/* webpackChunkName: "AuthSignout" */ './views/AuthSignout.vue'),
-
-        beforeEnter: async (to, from, next) => {
-          const user = auth.currentUser()
-          if (!user) 
-            next({ name: 'AuthSignin' })
-          else 
-            user.logout()
-              .then(response => next())
-              .catch(error => console.error("Failed to logout user: %o", error))
-        }
-      },
-
-      {
         path: 'password-lost',
         name: 'AuthPasswordLost',
         component: () => import(/* webpackChunkName: "AuthPasswordLost" */ './views/AuthPasswordLost.vue')
