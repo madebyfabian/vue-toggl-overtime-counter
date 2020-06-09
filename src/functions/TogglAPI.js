@@ -1,11 +1,11 @@
 import auth from './gotrue-auth'
 
-const urlPrepend = process.env.NODE_ENV.toLowerCase() === 'production' ? 'https://cors-anywhere.herokuapp.com/' : '' 
+// const urlPrepend = process.env.NODE_ENV.toLowerCase() === 'production' ? 'https://cors-anywhere.herokuapp.com/' : '' 
 
 
 const config = { 
-  baseUrl: urlPrepend + 'https://www.toggl.com/api/v8',
-  baseUrlReportsAPI: urlPrepend + 'https://toggl.com/reports/api/v2'
+  baseUrl: 'https://www.toggl.com/api/v8',
+  baseUrlReportsAPI: 'https://toggl.com/reports/api/v2'
 }
 
 console.log()
@@ -109,17 +109,14 @@ export default class TogglAPI {
       Object.keys(params).forEach(key => url.searchParams.append(key, params[key]))
 
       // Check if "Authorization" is set in the options object.
-      let AuthorizationHeader
-      if (!authOptions)
-        AuthorizationHeader = this.#APITokenString
-      else 
+      let AuthorizationHeader = this.#APITokenString
+      if (authOptions)
         AuthorizationHeader = btoa(`${authOptions.username}:${authOptions.password}`)
       
       const result = await fetch(url, {
         method: 'GET',
-        headers: new Headers({
-          Authorization: `Basic ${AuthorizationHeader}`
-        })
+        mode: 'no-cors',
+        headers: new Headers({ Authorization: `Basic ${AuthorizationHeader}` })
       })
 
       return this.#handleAPIResponse(result)
