@@ -56,10 +56,10 @@
 </template>
 
 <script>
-  import auth from '../functions/gotrue-auth'
+  import auth from '@/plugins/GotrueAuth'
 
-  import Button from '../components/Button'
-  import AlertBox from '../components/AlertBox'
+  import Button from '@/components/Button'
+  import AlertBox from '@/components/AlertBox'
 
   export default {
     components: { Button, AlertBox },

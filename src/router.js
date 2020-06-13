@@ -4,8 +4,8 @@ import Dashboard from '@/views/Dashboard.vue'
 
 Vue.use(VueRouter)
 
-import auth from './functions/gotrue-auth'
-import EmptyRouterView from './components/EmptyRouterView'
+import auth from '@/plugins/GotrueAuth'
+import EmptyRouterView from '@/components/EmptyRouterView'
 
 const routes = [
   {
@@ -14,6 +14,16 @@ const routes = [
     component: Dashboard,
     meta: {
       title: 'Dashboard',
+      requiresAuth: true
+    }
+  },
+
+  {
+    path: '/timer',
+    name: 'Timer',
+    component: () => import(/* webpackChunkName: "Timer" */ '@/views/Timer.vue'),
+    meta: {
+      title: 'Timer',
       requiresAuth: true
     }
   },
@@ -30,7 +40,7 @@ const routes = [
       {
         path: 'signin', 
         name: 'AuthSignin',
-        component: () => import(/* webpackChunkName: "AuthSignin" */ './views/AuthSignin.vue'),
+        component: () => import(/* webpackChunkName: "AuthSignin" */ '@/views/AuthSignin.vue'),
         meta: {
           title: 'Anmelden'
         }
@@ -39,7 +49,7 @@ const routes = [
       {
         path: 'password-lost',
         name: 'AuthPasswordLost',
-        component: () => import(/* webpackChunkName: "AuthPasswordLost" */ './views/AuthPasswordLost.vue'),
+        component: () => import(/* webpackChunkName: "AuthPasswordLost" */ '@/views/AuthPasswordLost.vue'),
         meta: {
           title: 'Passwort vergessen?'
         }
@@ -57,13 +67,13 @@ const routes = [
           {
             path: '',
             name: 'AuthSignup',
-            component: () => import(/* webpackChunkName: "AuthSignup" */ './views/AuthSignup__01.vue')
+            component: () => import(/* webpackChunkName: "AuthSignup" */ '@/views/AuthSignup__01.vue')
           },
 
           {
             path: 'toggl',
             name: 'AuthSignup__toggl',
-            component: () => import(/* webpackChunkName: "AuthWithToggl" */ './views/AuthSignup__02_toggl.vue'),
+            component: () => import(/* webpackChunkName: "AuthWithToggl" */ '@/views/AuthSignup__02_toggl.vue'),
             meta: {
               title: 'Mit toggl anmelden'
             }
@@ -72,13 +82,13 @@ const routes = [
           {
             path: 'create-account',
             name: 'AuthSignup__createAccount',
-            component: () => import(/* webpackChunkName: "AuthSignup__createAccount" */ './views/AuthSignup__03_createAccount.vue')
+            component: () => import(/* webpackChunkName: "AuthSignup__createAccount" */ '@/views/AuthSignup__03_createAccount.vue')
           },
 
           {
             path: 'verify-token',
             name: 'AuthSignup__verifyToken',
-            component: () => import(/* webpackChunkName: "AuthSignup__verifyToken" */ './views/AuthSignup__04_verifyToken.vue')
+            component: () => import(/* webpackChunkName: "AuthSignup__verifyToken" */ '@/views/AuthSignup__04_verifyToken.vue')
           },
           
           {
@@ -91,7 +101,7 @@ const routes = [
               {
                 path: 'workspaces',
                 name: 'AuthSignup__05_workspaces',
-                component: () => import(/* webpackChunkName: "AuthSignup__05_workspaces" */ './views/AuthSignup__05_workspaces.vue'),
+                component: () => import(/* webpackChunkName: "AuthSignup__05_workspaces" */ '@/views/AuthSignup__05_workspaces.vue'),
                 meta: {
                   title: 'Deine Workspaces'
                 }
@@ -100,7 +110,7 @@ const routes = [
               {
                 path: 'projects',
                 name: 'AuthSignup__06_projects',
-                component: () => import(/* webpackChunkName: "AuthSignup__06_projects" */ './views/AuthSignup__06_projects.vue'),
+                component: () => import(/* webpackChunkName: "AuthSignup__06_projects" */ '@/views/AuthSignup__06_projects.vue'),
                 meta: {
                   title: 'Deine Projekte'
                 }
@@ -109,7 +119,7 @@ const routes = [
               {
                 path: 'business-days',
                 name: 'AuthSignup__07_businessDays',
-                component: () => import(/* webpackChunkName: "AuthSignup__07_businessDays" */ './views/AuthSignup__07_businessDays.vue'),
+                component: () => import(/* webpackChunkName: "AuthSignup__07_businessDays" */ '@/views/AuthSignup__07_businessDays.vue'),
                 meta: {
                   title: 'Deine Arbeitszeit'
                 }

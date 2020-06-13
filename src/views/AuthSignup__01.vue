@@ -41,11 +41,11 @@
 </style>
 
 <script>
-  import auth from '../functions/gotrue-auth'
+  import auth from '@/plugins/GotrueAuth'
 
-  import Button from '../components/Button'
-  import AlertBox from '../components/AlertBox'
-  import TextDivider from '../components/TextDivider'
+  import Button from '@/components/Button'
+  import AlertBox from '@/components/AlertBox'
+  import TextDivider from '@/components/TextDivider'
 
   export default {
     components: { Button, AlertBox, TextDivider },

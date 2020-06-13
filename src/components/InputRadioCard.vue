@@ -11,7 +11,7 @@
 </template>
 
 <script>
-  import InputCard from './helpers/InputCard'
+  import InputCard from '@/components/helpers/InputCard'
 
   export default {
     name: 'InputRadioCard',

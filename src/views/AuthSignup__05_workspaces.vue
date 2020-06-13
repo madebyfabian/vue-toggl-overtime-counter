@@ -37,14 +37,14 @@
 </style>
 
 <script>
-  import auth from '../functions/gotrue-auth'
-  import TogglAPI from '../functions/TogglAPI'
-  import LocalStorageSignupData from '../functions/localstorage-signup-data'
+  import auth from '@/plugins/GotrueAuth'
+  import TogglAPI from '@/plugins/Toggl.API'
+  import LocalStorageSignupData from '@/functions/localstorage-signup-data'
 
-  import AlertBox from '../components/AlertBox'
-  import Button from '../components/Button'
-  import LoadingSpinner from '../components/LoadingSpinner'
-  import InputRadioCard from '../components/InputRadioCard'
+  import AlertBox from '@/components/AlertBox'
+  import Button from '@/components/Button'
+  import LoadingSpinner from '@/components/LoadingSpinner'
+  import InputRadioCard from '@/components/InputRadioCard'
 
 
   export default {

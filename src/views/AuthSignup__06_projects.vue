@@ -74,14 +74,14 @@
 </style>
 
 <script>
-  import auth from '../functions/gotrue-auth'
+  import auth from '@/plugins/GotrueAuth'
 
-  import AlertBox from '../components/AlertBox'
-  import Button from '../components/Button'
-  import LoadingSpinner from '../components/LoadingSpinner'
-  import InputCheckboxCard from '../components/InputCheckboxCard'
+  import AlertBox from '@/components/AlertBox'
+  import Button from '@/components/Button'
+  import LoadingSpinner from '@/components/LoadingSpinner'
+  import InputCheckboxCard from '@/components/InputCheckboxCard'
 
-  import TogglAPI from '../functions/TogglAPI'
+  import TogglAPI from '@/plugins/Toggl.API'
 
   export default {
     components: { Button, AlertBox, LoadingSpinner, InputCheckboxCard },

@@ -29,12 +29,12 @@
 </template>
 
 <script>
-  import auth from '../functions/gotrue-auth'
-  import LocalStorageSignupData from '../functions/localstorage-signup-data'
+  import auth from '@/plugins/GotrueAuth'
+  import LocalStorageSignupData from '@/functions/localstorage-signup-data'
 
-  import Button from '../components/Button'
-  import AlertBox from '../components/AlertBox'
-  import TextDivider from '../components/TextDivider'
+  import Button from '@/components/Button'
+  import AlertBox from '@/components/AlertBox'
+  import TextDivider from '@/components/TextDivider'
 
   export default {
     components: { Button, AlertBox, TextDivider },

@@ -54,23 +54,12 @@
 </style>
 
 <script>
-  import dayjs from 'dayjs'
-  import 'dayjs/locale/de'
+  import auth from '@/plugins/GotrueAuth'
+  import TogglAPI from '@/plugins/Toggl.API'
 
-  // import relativeTime from 'dayjs/plugin/relativeTime'
-  // dayjs.extend(relativeTime)
-
-  dayjs.locale('de')
-
-  // import duration from 'dayjs/plugin/duration'
-  // dayjs.extend(duration)
-
-  import auth from '../functions/gotrue-auth'
-  import TogglAPI from '../functions/TogglAPI'
-
-  import RefreshButton from '../components/RefreshButton'
-  import WeekList from '../components/WeekList'
-  import BigHeadline from '../components/BigHeadline'
+  import RefreshButton from '@/components/RefreshButton'
+  import WeekList from '@/components/WeekList'
+  import BigHeadline from '@/components/BigHeadline'
 
 
   export default {
@@ -88,15 +77,6 @@
 
     async created() {
       await this.fetchApiResponse()
-
-
-
-      // const startOfYear = dayjs().startOf('year')
-      // const today = dayjs()
-
-      // const duration = dayjs.duration(today.diff(startOfYear)).asWeeks()
-
-      // console.log(Math.floor(duration), 'Wochen')
     },
 
     methods: {
@@ -108,7 +88,7 @@
         try {
           this.isLoading = true
 
-          const resultApi = await TogglAPI.getWeeklyReport(dayjs().startOf('week').format('YYYY-MM-DD'))
+          const resultApi = await TogglAPI.getWeeklyReport(this.$date().startOf('week').format('YYYY-MM-DD'))
           const result = resultApi?.week_totals
           if (!result)
             throw new Error('Something is wrong with the API response')
@@ -118,7 +98,7 @@
             throw new Error('User didn\'t setuped the business days!')
 
           // Now, let's look what weekday it's currently.
-          const currentWeekdayID = dayjs().day()
+          const currentWeekdayID = this.$date().day()
 
           let returnedData = {
             weekStatus: 0,
@@ -135,7 +115,7 @@
             let weekday = { 
               dayId: i,
               status: null,
-              label: dayjs().day(i).format('dd'),
+              label: this.$date().day(i).format('dd'),
               isToday: i === currentWeekdayID
             }
 
