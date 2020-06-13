@@ -5,18 +5,17 @@
       :style="styleVariables.css"
       @keydown="onKeydown"
       @mousedown.prevent="dragStart"
-      ref="switch"
       class="switch" 
       tabindex="0">
 
       <div 
-        :class="{ 'is-active': isActive, 'is-not-dragging': !draggability.dragging }"
-        :style="{ 'transform': cssTransformString }"
+        :class="{ 'is-checked': isChecked, 'is-not-dragging': !draggability.dragging }"
+        :style="renderKnobLeftAndRightStyles"
         class="knob" 
       />
     </div>
 
-    <pre>{{ {...this.$data, value} }}</pre>
+    <pre>{{ {...this.$data, value, ...renderKnobLeftAndRightStyles} }}</pre>
   </div>
 </template>
 
@@ -27,9 +26,7 @@
     },
 
     data: () => ({
-      css: {
-        transform: 0
-      },
+      cssTransform: 0,
       draggability: {
         dragging: false,
         offset: 0,
@@ -38,21 +35,14 @@
     }),
 
     computed: {
-      isActive() {
-        console.log(this.draggability.offset, this.styleVariables.obj.triggerSize)
-        return this.css.transform > this.styleVariables.obj.triggerSize
-      },
-      cssTransformString() {
-        return this.draggability.dragging ? `translateX(${this.css.transform}px)` : null
-      },
       styleVariables() {
         const data = {
           __width: 72,
           __knobSize: 32,
           __knobSpace: 4,
-          __knobResizeOnDrag: 4
+          __knobResizeOnDrag: 8
         }
-        data['__knobSpaceToOtherSide'] = data.__width - data.__knobSize - (data.__knobSpace * 2)
+        data['__knobSpaceToOtherSide'] = (data.__width - (data.__knobSpace * 2)) - data.__knobSize
 
         return {
           css: {
@@ -62,13 +52,31 @@
             '--knob-resize-on-drag': data.__knobResizeOnDrag + 'px',
             '--knob-space-to-other-side': data.__knobSpaceToOtherSide + 'px'
           },
-          obj: {
-            ...data,
-
+          obj: { ...data,
             // The amount of pixels before it starts to get from true to false and vice verca
-            triggerSize: data.__width / 2 - data.__knobSize / 2
+            triggerSize: (data.__width - (data.__knobSpace * 2)) / 2 - data.__knobSize / 2
           }
         }
+      },
+
+      isChecked() {
+        return this.cssTransform > this.styleVariables.obj.triggerSize
+      },
+
+      renderKnobLeftAndRightStyles() {
+        const transform = this.cssTransform
+
+        let left  = this.cssTransform
+        let right = this.styleVariables.obj.__knobSize - this.cssTransform
+
+        if (this.draggability.dragging) {
+          if (!!this.value)
+            left -= this.styleVariables.obj.__knobResizeOnDrag
+          else
+            right -= this.styleVariables.obj.__knobResizeOnDrag
+        }
+
+        return { left: left + 'px', right: right + 'px' }
       },
     },
 
@@ -78,8 +86,6 @@
 
       if (!!this.value) 
         this.switchValue('on')
-
-      console.log(this.styleVariables.obj.triggerSize)
     },
     
     methods: {
@@ -90,11 +96,11 @@
         switch (type) {
           case 'off':
             this.$emit('input', false)
-            this.css.transform = 0
+            this.cssTransform = 0
             break
         
           case 'on':
-            this.css.transform = this.styleVariables.obj.__knobSpaceToOtherSide
+            this.cssTransform = this.styleVariables.obj.__knobSpaceToOtherSide
             this.$emit('input', true)
             break
         }
@@ -134,7 +140,14 @@
         transform = this.value ? spaceToOtherSide - this.draggability.offset : this.draggability.offset
 
         // limit between 0 and x (depends on width of knob & switch)
-        this.css.transform = Math.min(Math.max(parseInt(transform), 0), spaceToOtherSide) 
+
+        let min = 0, max = spaceToOtherSide
+        if (!!this.value)
+          min = this.styleVariables.obj.__knobResizeOnDrag
+        else
+          max = spaceToOtherSide - this.styleVariables.obj.__knobResizeOnDrag
+
+        this.cssTransform = Math.min(Math.max(parseInt(transform), min), max) 
       },
 
       dragEnd() {
@@ -169,20 +182,17 @@
   .switch {
     border-radius: 100px;
     background: #2F3437;
+    margin: 4px;
+    box-shadow: 0 0 0 4px #2F3437;
     position: relative;
-    height: calc(var(--knob-size) + (var(--knob-space) * 2));
-    width: var(--width);
+    height: var(--knob-size);
+    width: calc(var(--width) - var(--knob-space) * 2);
     display: block;
     user-select: none;
     cursor: pointer;
 
-    &:active .knob {
-      right: var(--knob-space-to-other-side);
-
-      &.is-active {
-        left: 0px;
-        right: calc(var(--knob-space-to-other-side) + var(--knob-resize-on-drag))
-      }
+    @at-root .using-keyboard label input:focus ~ .switch {
+      box-shadow: 0 0 0 6px rgba(#2EAADC, .5)!important
     }
 
     .knob {
@@ -190,22 +200,27 @@
       height: var(--knob-size);
       border-radius: 100px;
       position: absolute;
-      left: var(--knob-space);
-      right: calc(var(--knob-space-to-other-side) + var(--knob-resize-on-drag));
-      top: var(--knob-space);
+      top: 0;
       background-color: #788287;
       transition-duration: 300ms;
       transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      transition-property: background-color, width, right, left;
+      transition-property: background-color, width;
 
       &.is-not-dragging {
         transition-property: all;
       }
 
-      &.is-active {
+      &.is-checked {
         background-color: #2EAADC;
-        transform: translateX(var(--knob-space-to-other-side));
       }
     }
+
+    // &:active .knob {
+    //   left: var(--knob-space-to-other-side);
+
+    //   &.is-checked {
+    //     left: calc(var(--knob-space-to-other-side) - var(--knob-resize-on-drag));
+    //   }
+    // }
   }
 </style>
