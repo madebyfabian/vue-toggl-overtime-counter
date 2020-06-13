@@ -2,17 +2,9 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 
+import '@/plugins/Dayjs'
+
 Vue.config.productionTip = false
-
-Vue.mixin({
-  created() {
-    // console.log(this.$route?.meta?.title)
-
-    // const title = this.$options?.title
-    // if (title)
-    //   document.title = title
-  }
-})
 
 new Vue({
   router,
