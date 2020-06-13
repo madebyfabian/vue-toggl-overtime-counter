@@ -9,13 +9,13 @@
       tabindex="0">
 
       <div 
-        :class="{ 'is-checked': isChecked, 'is-not-dragging': !draggability.dragging }"
+        :class="{ 'is-checked': isChecked }"
         :style="renderKnobLeftAndRightStyles"
         class="knob" 
       />
     </div>
 
-    <pre>{{ {...this.$data, value, ...renderKnobLeftAndRightStyles} }}</pre>
+    <pre>{{ { ...this.$data } }}</pre>
   </div>
 </template>
 
@@ -30,7 +30,7 @@
       draggability: {
         dragging: false,
         offset: 0,
-        offsetInitial: 0,
+        offsetInitial: 0
       }
     }),
 
@@ -40,7 +40,7 @@
           __width: 72,
           __knobSize: 32,
           __knobSpace: 4,
-          __knobResizeOnDrag: 8
+          __knobResizeOnDrag: 4
         }
         data['__knobSpaceToOtherSide'] = (data.__width - (data.__knobSpace * 2)) - data.__knobSize
 
@@ -191,10 +191,6 @@
     user-select: none;
     cursor: pointer;
 
-    @at-root .using-keyboard label input:focus ~ .switch {
-      box-shadow: 0 0 0 6px rgba(#2EAADC, .5)!important
-    }
-
     .knob {
       display: block;
       height: var(--knob-size);
@@ -202,25 +198,13 @@
       position: absolute;
       top: 0;
       background-color: #788287;
-      transition-duration: 300ms;
+      transition-duration: 250ms;
       transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      transition-property: background-color, width;
-
-      &.is-not-dragging {
-        transition-property: all;
-      }
+      transition-property: all;
 
       &.is-checked {
         background-color: #2EAADC;
       }
     }
-
-    // &:active .knob {
-    //   left: var(--knob-space-to-other-side);
-
-    //   &.is-checked {
-    //     left: calc(var(--knob-space-to-other-side) - var(--knob-resize-on-drag));
-    //   }
-    // }
   }
 </style>
