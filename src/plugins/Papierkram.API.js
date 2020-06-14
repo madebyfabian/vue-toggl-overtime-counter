@@ -6,7 +6,7 @@ import dayjs from '@/plugins/Dayjs'
  * Wrapper for Papierkram's inofficial API
  * @see https://github.com/SimonIT/timetracker/blob/master/lib/api.dart
  */
-export default class Papierkram {
+export class Papierkram {
 
   /**
    * Authenticates the user and updates identity with authToken, realtimeToken and subdomain.
@@ -76,6 +76,37 @@ export default class Papierkram {
 
 
   /**
+   * Get a list of all active projects
+   * @param {{ autoComplete: String }} options
+   * @returns {Array<{ id: Number, colorId: Number, description: String, name: String, customer: { id: Number, name: String } }>}
+   */
+  static async getProjects( options = {} ) {
+    const makeRequestOptions = { requiresAuth: true }
+    if (options?.autoComplete)
+      makeRequestOptions.query = { auto_complete: options?.autoComplete }
+
+    const projects = await makeRequest('/projects', makeRequestOptions)
+
+    return projects.map(project => PapierkramHelpers.formatProjectEntry(project))
+  } 
+
+
+
+  /**
+   * Get a single project by the ID.
+   * @param {Number} id
+   */
+  static async getProject( id ) {
+    if (!id || typeof id !== 'number')
+      throw new Error('Please provide the id. It should be a number.')
+
+    const project = await makeRequest(`/projects/${id}`, { requiresAuth: true })
+    return PapierkramHelpers.formatProjectEntry(project)
+  }
+
+
+
+  /**
    * Adds a new timer entry to the user's account.
    * @param {object}    options
    * @param {Date}      options.startedAt When the tracker has started
@@ -88,8 +119,8 @@ export default class Papierkram {
   static async addNewTrackerEntry( options ) {
     try {
       const body = {
-        'tracker_time_entry[started_at]': APIHelpers.format(options.startedAt),
-        'tracker_time_entry[ended_at]': APIHelpers.format(options.endedAt),
+        'tracker_time_entry[started_at]': PapierkramHelpers.format(options.startedAt),
+        'tracker_time_entry[ended_at]': PapierkramHelpers.format(options.endedAt),
         'tracker_time_entry[comments]': options?.comment || '',
         'tracker_time_entry[unbillable]': !options.billable,
         'project_id': options.projectId,
@@ -108,7 +139,7 @@ export default class Papierkram {
 }
 
 
-class APIHelpers {
+export class PapierkramHelpers {
 
   /**
    * Format values into the formats the API needs.
@@ -118,6 +149,7 @@ class APIHelpers {
     if (val instanceof dayjs) 
       return dayjs(val).format('YYYY-MM-DD HH:mm:ss')
   }
+
 
   /**
    * The papierkramApiCredentials saved in the current user's meta-data.
@@ -133,6 +165,54 @@ class APIHelpers {
       return { authToken, realtimeToken, subdomain }
   }
 
+
+  /**
+   * Groups an array of Projects by the customer
+   * @param {Array<{}>} projects The array of Projects. 
+   * @returns {{customerId: Array<{
+      * id: Number, 
+      * colorId: Number, 
+      * description: String,
+      * name: String,
+      * customer: { id: Number, name: String }
+   * }>}}
+   */
+  static groupProjectsByCustomer( projects ) {
+    try {
+      const groupedData = {}
+      for (const project of projects) {
+        const customerId = project?.customer?.id
+
+        if (!groupedData?.[customerId])
+          groupedData[customerId] = []
+
+        groupedData[customerId].push(project)
+      }
+
+      return groupedData
+    } catch (error) {
+      console.error('Error sorting the projects by Customer. Maybe the given data is broken?')
+    }
+    
+  }
+
+
+  /**
+   * Formattes a single API project entry and returns it.
+   * @param {object} project Raw API project entry.
+   */
+  static formatProjectEntry( project ) {
+    return {
+      id: project.id,
+      colorId: project.color,
+      description: project.description,
+      name: project.name,
+      customer: {
+        id: project.customer.id,
+        name: project.customer.name
+      }
+    }
+  }
 }
 
 
@@ -144,6 +224,7 @@ class APIHelpers {
  * @param {boolean} options.requiresAuth  If the requested resource does need authentication. Default: false
  * @param {string}  options.method        The HTTP Method. Default: 'GET'
  * @param {object}  options.body          The body data object. (optional)
+ * @param {object}  options.query         Object of additional URL queries.
  */
 const makeRequest = async ( path, options ) => {
   try {
@@ -152,16 +233,22 @@ const makeRequest = async ( path, options ) => {
 
     const requiresAuth  = options?.requiresAuth || false,
           method        = options?.method || 'GET',
-          body          = options?.body
+          body          = options?.body,
+          queries       = options?.query
 
+    // Generate URL
     let url = baseURL + path
+    let urlQueries = {}
     if (requiresAuth) {
-      if (!APIHelpers.credentials?.authToken)
+      if (!PapierkramHelpers.credentials?.authToken)
         throw new Error('papierkramApiCredentials not found in the user_metadata!')
-    
-      url += `?auth_token=${APIHelpers.credentials?.authToken}`
+  
+      urlQueries.auth_token = PapierkramHelpers.credentials?.authToken
     }
-
+    if (queries)
+      urlQueries = { ...urlQueries, ...queries }
+    url = `${url}?${new URLSearchParams(urlQueries).toString()}`
+    
     const fetchOptions = { 
       method, 
       headers: new Headers({ 'Content-Type': 'application/x-www-form-urlencoded'})
