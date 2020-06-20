@@ -3,20 +3,20 @@
     <h1>Konto erstellen</h1>
     
     <AlertBox icon="📧" type="info">
-      Vielen Dank! Du hast soeben eine Bestätigungs-PIN per E-Mail erhalten.
+      Vielen Dank! Du hast soeben eine Bestätigungs-Code per E-Mail erhalten.
     </AlertBox>
 
     <transition name="slide">
       <AlertBox icon="❌" type="error" v-if="tokenIsValid === false">
-        Fehler bei der Verifizierung des PINs. <br><br>
+        Fehler bei der Verifizierung des Bestätigungs-Codes. <br><br>
         <router-link :to="{ name: 'AuthSignup', params: $route.param }">Erneut versuchen</router-link>
       </AlertBox>
     </transition>
 
     <form @submit.prevent="handleSubmitTokenVerify" class="auth-form">
-      <input type="text" v-model="userConfirmation.token" placeholder="Bestätigungs-PIN" required>
+      <input type="text" v-model="userConfirmation.token" placeholder="Bestätigungs-Code" required>
 
-      <Button type="submit" :isLoading="isLoading">Weiter &rarr;</Button>
+      <Button type="submit" :isLoading="isLoading">Bestätigen & Weiter &rarr;</Button>
     </form>
   </div>
 </template>
