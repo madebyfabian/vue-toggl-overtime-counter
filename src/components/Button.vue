@@ -30,7 +30,7 @@
         type: String,
         default: 'primary',
         validator: (value) => {
-          return [ 'primary', 'secondary' ].includes(value)
+          return [ 'primary', 'secondary', 'dropdown' ].includes(value)
         }
       },
 
@@ -76,6 +76,21 @@
       color: #C0C5C8; 
       border: 2px solid #454B4E;
       background: transparent;
+    }
+
+    &[data-button-type=dropdown] {
+      padding: 0;
+      height: 40px;
+      border-radius: 0;
+      background: transparent;
+      color: rgba(#fff, .5);
+      font-weight: 400;
+      width: auto;
+
+      &:active {
+        transform: none;
+        opacity: .5;
+      }
     }
 
     &:hover {
