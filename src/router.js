@@ -5,113 +5,86 @@ import Dashboard from '@/views/Dashboard.vue'
 Vue.use(VueRouter)
 
 import auth from '@/plugins/GotrueAuth'
-import EmptyRouterView from '@/components/EmptyRouterView'
+import EmptyRouterView from '@/components/views/EmptyRouterView'
+import MainAppView from '@/components/views/MainAppView'
+
+import { providers } from '@/config'
 
 const routes = [
   {
-    path: '/',
-    name: 'Dashboard',
-    component: Dashboard,
-    meta: { title: 'Dashboard', requiresAuth: true }
-  },
-
-  {
     path: '/timer',
     name: 'Timer',
-    component: () => import(/* webpackChunkName: "Timer" */ '@/views/Timer.vue'),
+    component: () => import('@/views/Timer.vue'),
     meta: { title: 'Timer', requiresAuth: true }
   },
 
-  /**
-   * Auth
-   */
   {
-    path: '/auth',
-    redirect: { name: 'AuthSignin' },
-    component: EmptyRouterView,
-
+    path: '/',
+    component: MainAppView,
     children: [
       {
-        path: 'signin', 
-        name: 'AuthSignin',
-        component: () => import(/* webpackChunkName: "AuthSignin" */ '@/views/Auth/AuthSignin.vue'),
-        meta: { title: 'Anmelden' }
+        path: '/',
+        name: 'Dashboard',
+        component: Dashboard,
+        meta: { title: 'Dashboard', requiresAuth: true }
       },
 
       {
-        path: 'password-lost',
-        name: 'AuthPasswordLost',
-        component: () => import(/* webpackChunkName: "AuthPasswordLost" */ '@/views/Auth/AuthPasswordLost.vue'),
-        meta: { title: 'Passwort vergessen?' }
-      },
-
-      {
-        path: 'signup', 
-        redirect: { name: 'AuthSignup' },
+        path: '/auth',
+        redirect: { name: 'AuthSignin' },
         component: EmptyRouterView,
-        meta: { title: 'Konto erstellen' },
-
         children: [
           {
-            path: '',
-            name: 'AuthSignup',
-            component: () => import(/* webpackChunkName: "AuthSignup" */ '@/views/Auth/AuthSignup__01.vue')
+            path: 'signin', 
+            name: 'AuthSignin',
+            component: () => import('@/views/Auth/AuthSignin.vue'),
+            meta: { title: 'Anmelden' }
           },
-
+    
           {
-            path: 'toggl',
-            name: 'AuthSignup__toggl',
-            component: () => import(/* webpackChunkName: "AuthWithToggl" */ '@/views/Auth/AuthSignup__02_toggl.vue'),
-            meta: { title: 'Mit toggl anmelden' }
+            path: 'password-lost',
+            name: 'AuthPasswordLost',
+            component: () => import('@/views/Auth/AuthPasswordLost.vue'),
+            meta: { title: 'Passwort vergessen?' }
           },
-
+    
           {
-            path: 'create-account',
-            name: 'AuthSignup__createAccount',
-            component: () => import(/* webpackChunkName: "AuthSignup__createAccount" */ '@/views/Auth/AuthSignup__03_createAccount.vue')
-          },
-
-          {
-            path: 'verify-token',
-            name: 'AuthSignup__verifyToken',
-            component: () => import(/* webpackChunkName: "AuthSignup__verifyToken" */ '@/views/Auth/AuthSignup__04_verifyToken.vue')
-          },
-          
-          {
-            path: 'account-config',
-            redirect: { name: 'AuthSignup__05_workspaces' },
+            path: 'signup', 
+            redirect: { name: 'AuthSignup' },
             component: EmptyRouterView,
-            meta: { requiresAuth: true },
-
+            meta: { title: 'Konto erstellen' },
             children: [
               {
-                path: 'workspaces',
-                name: 'AuthSignup__05_workspaces',
-                component: () => import(/* webpackChunkName: "AuthSignup__05_workspaces" */ '@/views/Auth/AuthSignup__05_workspaces.vue'),
-                meta: { title: 'Deine Workspaces' }
+                path: '',
+                name: 'AuthSignup',
+                component: () => import('@/views/Auth/AuthSignup.vue')
               },
 
               {
-                path: 'projects',
-                name: 'AuthSignup__06_projects',
-                component: () => import(/* webpackChunkName: "AuthSignup__06_projects" */ '@/views/Auth/AuthSignup__06_projects.vue'),
-                meta: { title: 'Deine Projekte' }
+                path: 'provider/:provider',
+                name: 'AuthSignup_withProvider',
+                beforeEnter: (to, from, next) => {
+                  return !providers.find(provider => provider.name === to.params?.provider) 
+                    ? next({ name: 'AuthSignup' }) : next()
+                },
+                component: () => import('@/views/Auth/AuthSignup_withProvider.vue')
               },
 
               {
-                path: 'business-days',
-                name: 'AuthSignup__07_businessDays',
-                component: () => import(/* webpackChunkName: "AuthSignup__07_businessDays" */ '@/views/Auth/AuthSignup__07_businessDays.vue'),
-                meta: { title: 'Deine Arbeitszeit' }
-              }
+                path: 'create-account',
+                name: 'AuthSignup_createAccount',
+                beforeEnter: (to, from, next) => {
+                  return !to.params?.connectionToProvider?.successful
+                    ? next({ name: 'AuthSignup' }) : next()
+                },
+                component: () => import('@/views/Auth/AuthSignup_createAccount.vue')
+              },
             ]
           }
         ]
-      } // end /auth/signup
-
+      }, // end /auth
     ]
-  }, // end /auth
-
+  },
 
   // Catch 404
   {

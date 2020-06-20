@@ -1,15 +1,11 @@
 <template>
   <div>
     <div v-if="doSignout && signoutSuccessful === null">
-      <p>Du wirst ausgeloggt...</p>
+      <AlertBox icon="👋" type="success">Du wirst ausgeloggt. Bis zum nächsten mal!</AlertBox>
     </div>
 
     <div v-else>
       <h1>Anmelden</h1>
-
-      <transition name="slide" v-if="doSignout">
-        <AlertBox icon="👋" type="success" v-if="signoutSuccessful === true">Erfolgreich ausgeloggt. Bis zum nächsten mal!</AlertBox>
-      </transition>
 
       <transition name="slide">
         <AlertBox icon="😢" type="error" v-if="authError">
@@ -18,8 +14,9 @@
       </transition>
         
       <form @submit.prevent="handleSubmit" class="auth-form">
-        <input type="email" v-model="user.email" placeholder="E-Mail-Adresse" required>
-        <input type="password" v-model="user.password" placeholder="Passwort" required>
+        <InputField type="email" v-model.trim="user.email" />
+        <InputField type="password" v-model.trim="user.password" />
+
         <router-link :to="{ name: 'AuthPasswordLost', params: { email: user.email } }" class="link--password-lost">Vergessen?</router-link>
 
         <Button type="submit" :isLoading="isLoading">Anmelden</Button>
@@ -38,9 +35,10 @@
 
   import Button from '@/components/Button'
   import AlertBox from '@/components/AlertBox'
+  import InputField from '@/components/InputField'
 
   export default {
-    components: { Button, AlertBox },
+    components: { Button, AlertBox, InputField },
 
     data: () => ({
       user: {

@@ -1,22 +1,21 @@
 <template>
-  <div>
-    <div
-      :isChecked="value"
-      :style="styleVariables.css"
-      @keydown="onKeydown"
-      @mousedown.prevent="dragStart"
-      class="switch" 
-      tabindex="0">
+  <div
+    :isChecked="value"
+    :style="styleVariables.css"
+    @keydown="onKeydown"
+    @mousedown.prevent="dragStart"
+    class="switch" 
+    tabindex="0"
+    role="switch">
 
-      <div 
-        :class="{ 'is-checked': isChecked }"
-        :style="renderKnobLeftAndRightStyles"
-        class="knob" 
-      />
-    </div>
-
-    <pre>{{ { ...this.$data } }}</pre>
+    <div 
+      :class="{ 'is-checked': isChecked }"
+      :style="renderKnobLeftAndRightStyles"
+      class="knob" 
+    />
   </div>
+
+  <!-- <pre>{{ { ...this.$data } }}</pre> -->
 </template>
 
 <script>
@@ -40,7 +39,7 @@
           __width: 72,
           __knobSize: 32,
           __knobSpace: 4,
-          __knobResizeOnDrag: 4
+          __knobResizeOnDrag: 8
         }
         data['__knobSpaceToOtherSide'] = (data.__width - (data.__knobSpace * 2)) - data.__knobSize
 
@@ -182,11 +181,10 @@
   .switch {
     border-radius: 100px;
     background: #2F3437;
-    margin: 4px;
-    box-shadow: 0 0 0 4px #2F3437;
+    border: 4px solid #2F3437;
     position: relative;
-    height: var(--knob-size);
-    width: calc(var(--width) - var(--knob-space) * 2);
+    height: calc(var(--knob-size) + var(--knob-space) * 2);
+    width: var(--width);
     display: block;
     user-select: none;
     cursor: pointer;

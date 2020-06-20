@@ -3,11 +3,11 @@
     <h1>Passwort vergessen?</h1>
 
     <transition name="slide">
-      <AlertBox icon="😢" type="error" v-if="errorSendingRecoveryPIN">
-        Fehler beim Senden der Wiederherstellungs-PIN. Bist du mit dieser E-Mail-Adresse registriert?
+      <AlertBox icon="😢" type="error" v-if="errorSendingRecoveryCode">
+        Fehler beim Senden des Wiederherstellungs-Codes. Bist du mit dieser E-Mail-Adresse registriert?
       </AlertBox>
-      <AlertBox icon="👌" type="info" v-if="recoveryPINSent && !allOperationsFinished">
-        Du hast soeben eine Bestätigungs-PIN per E-Mail an <strong>{{ user.email }}</strong> erhalten.
+      <AlertBox icon="👌" type="info" v-if="recoveryCodeSent && !allOperationsFinished">
+        Du hast soeben einen Bestätigungs-Code per E-Mail an <strong>{{ user.email }}</strong> erhalten.
       </AlertBox>
     </transition>
 
@@ -19,7 +19,7 @@
         Dein Passwort sollte mindestens 8 Zeichen enthalten.
       </AlertBox>
       <AlertBox icon="❌" type="error" v-if="errorWhileRecoveringAccount === 'apiError'">
-        Fehler beim Versuch dein Passwort zurückzusetzen. Vielleicht ein Tippfehler bei der Pin?
+        Fehler beim Versuch dein Passwort zurückzusetzen. Vielleicht ein Tippfehler beim Bestätigungs-Code?
       </AlertBox>
       <AlertBox icon="❌" type="error" v-if="errorWhileRecoveringAccount === 'apiErrorWhilePasswordChange'">
         Fehler beim Versuch dein Passwort zurückzusetzen. Versuch es bitte noch einmal.
@@ -30,11 +30,11 @@
       </AlertBox>
     </transition>
 
-    <div v-if="!recoveryPINSent">
-      <form @submit.prevent="handleSubmitOfRecoveryPINEmail" class="auth-form" id="recoveryPINEmailForm">
-        <input type="email" v-model="user.email" placeholder="Deine E-Mail-Adresse" required>
+    <div v-if="!recoveryCodeSent">
+      <form @submit.prevent="handleSubmitOfRecoveryCodeEmail" class="auth-form" id="recoveryCodeEmailForm">
+        <InputField type="email" v-model="user.email" />
 
-        <Button type="submit" :isLoading="isLoading">Wiederherstellungs-PIN anfordern</Button>
+        <Button type="submit" :isLoading="isLoading">Wiederherstellungs-Code anfordern</Button>
       </form>
 
       <div class="link-with-text">
@@ -43,11 +43,11 @@
       </div>
     </div>
 
-    <div v-if="recoveryPINSent && !allOperationsFinished">
+    <div v-if="recoveryCodeSent && !allOperationsFinished">
       <form @submit.prevent="handleSubmitOfPasswordChange" class="auth-form">
-        <input type="text" v-model="userRecoveryData.token" placeholder="Wiederherstellungs-Pin" required>
-        <input type="password" v-model="userRecoveryData.newPassword" placeholder="Neues Passwort" required>
-        <input type="password" v-model="userRecoveryData.newPasswordRepeat" placeholder="Neues Passwort wiederholen" required>
+        <InputField type="text" v-model="userRecoveryData.token" placeholder="Wiederherstellungs-Code" />
+        <InputField type="password" v-model="userRecoveryData.newPassword" placeholder="Neues Passwort" />
+        <InputField type="password" v-model="userRecoveryData.newPasswordRepeat" placeholder="Neues Passwort wiederholen" />
 
         <Button type="submit" :isLoading="isLoading">Neues Passwort speichern</Button>
       </form>
@@ -60,9 +60,10 @@
 
   import Button from '@/components/Button'
   import AlertBox from '@/components/AlertBox'
+  import InputField from '@/components/InputField'
 
   export default {
-    components: { Button, AlertBox },
+    components: { Button, AlertBox, InputField },
 
     data: () => ({
       // 1st view
@@ -70,8 +71,8 @@
         email: ''
       },
       isLoading: false,
-      errorSendingRecoveryPIN: false,
-      recoveryPINSent: false,
+      errorSendingRecoveryCode: false,
+      recoveryCodeSent: false,
       
       // 2nd view
       userRecoveryData: {
@@ -95,17 +96,17 @@
     },
 
     methods: {
-      async handleSubmitOfRecoveryPINEmail() {
+      async handleSubmitOfRecoveryCodeEmail() {
         this.isLoading = true 
-        this.errorSendingRecoveryPIN = false
+        this.errorSendingRecoveryCode = false
 
         // Send password recovery link...
         auth.requestPasswordRecovery(this.user.email)
           .then(response => {
-            this.recoveryPINSent = true
+            this.recoveryCodeSent = true
           })
           .catch(error => {
-            this.errorSendingRecoveryPIN = true
+            this.errorSendingRecoveryCode = true
           })
           .then(() => {
             this.isLoading = false

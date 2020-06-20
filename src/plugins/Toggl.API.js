@@ -10,13 +10,21 @@ const config = {
  * Toggl API Wrapper.
  */
 export default class TogglAPI {
+
   /**
    * Get current user data.
-   * @param {object} authOptions An object with auth infos, e.g. { user: 'x@y.com', password: 'xyz' }
    * @see https://github.com/toggl/toggl_api_docs/blob/master/chapters/users.md#get-current-user-data
    */
-  static async getUserData( authOptions = null ) {
-    return await this.#get('/me', { Authorization: authOptions })
+  static async authenticate( username, password ) {
+    try {
+      const res = await this.#get('/me', { Authorization: { username, password } })
+      return {
+        authToken: res.data.api_token,
+        name: res.data.fullname
+      }
+    } catch (error) {
+      console.error(error)
+    }
   }
 
 
@@ -36,7 +44,6 @@ export default class TogglAPI {
   }
 
 
-
   /**
    * Get data about all the workspaces where the token owner belongs to.
    * @see https://github.com/toggl/toggl_api_docs/blob/master/chapters/workspaces.md#get-workspaces
@@ -44,6 +51,7 @@ export default class TogglAPI {
   static async getWorkspaces() {
     return await this.#get('/workspaces')
   }
+
 
   /**
    * Get workspace projects.
@@ -57,6 +65,7 @@ export default class TogglAPI {
     return await this.#get(`/workspaces/${workspaceId}/projects`)
   }
 
+
   /**
    * Get workspace clients.
    * @see https://github.com/toggl/toggl_api_docs/blob/master/chapters/workspaces.md#get-workspace-clients
@@ -69,9 +78,6 @@ export default class TogglAPI {
     return await this.#get(`/workspaces/${workspaceId}/clients`)
   }
 
-
-  
-  // ------------------ PRIVATE ------------------
 
   /**
    * HTTP GET with the Authorization Headers
