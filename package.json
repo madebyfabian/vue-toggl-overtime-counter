@@ -7,10 +7,10 @@
     "build": "vue-cli-service build"
   },
   "dependencies": {
-    "core-js": "^3.6.4",
     "dayjs": "^1.8.27",
     "gotrue-js": "^0.9.25",
     "vue": "^2.6.11",
+    "vue-progressbar": "^0.7.5",
     "vue-router": "^3.1.6"
   },
   "devDependencies": {

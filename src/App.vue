@@ -18,7 +18,33 @@
       }
     },
 
+    created() {
+      //  [App.vue specific] When App.vue is first loaded start the progress bar
+      this.$Progress.start()
+      //  hook the progress bar to start before we move router-view
+      this.$router.beforeEach((to, from, next) => {
+        //  does the page we want to go to have a meta.progress object
+        if (to.meta.progress !== undefined) {
+          let meta = to.meta.progress
+          // parse meta tags
+          this.$Progress.parseMeta(meta)
+        }
+        //  start the progress bar
+        this.$Progress.start()
+        //  continue to next page
+        next()
+      })
+      //  hook the progress bar to finish after we've finished moving router-view
+      this.$router.afterEach((to, from) => {
+        //  finish the progress bar
+        this.$Progress.finish()
+      })
+    },
+
     mounted() {
+      //  [App.vue specific] When App.vue is finish loading finish the progress bar
+      this.$Progress.finish()
+
       window.addEventListener('keydown', (e) => this.a11yClassChange(true))
       window.addEventListener('mousedown', (e) => this.a11yClassChange(false))
       window.addEventListener('touchstart', (e) => this.a11yClassChange(false))
@@ -28,7 +54,8 @@
 
 <style lang="scss">
   :root {
-    --color-toggl-brand: #E24F54;
+    --color--brand-toggl: #E24F54;
+    --color--brand-papierkram: #03A9F4;
   }
 
   body {
@@ -42,7 +69,6 @@
     font-family: 'Inter', system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    // user-select: none;
     box-sizing: border-box;
     font-size: 16px;
 
@@ -59,15 +85,7 @@
   }
 
   .using-keyboard *:focus {
-    box-shadow: 0 0 0 3px rgba(#2EAADC, .5)!important
-  }
-
-  #app {
-    background: #363B3E;
-    border-radius: 24px;
-    padding: 80px 24px;
-    text-align: center;
-    overflow: hidden;
+    box-shadow: 0 0 0 3px rgba(#2EAADC, .5)
   }
 
   h1, h2, h3, p {
@@ -149,30 +167,13 @@
     display: flex;
     flex-direction: column;
 
-    input {
-      height: 56px;
-      background-color: #2F3437;
-      padding: 0 24px;
-      border-radius: 8px;
-      border: none;
-      outline: none;
-      appearance: none;
-      color: #fff;
-      width: 100%;
-      margin-bottom: 24px;
-
-      &:last-of-type {
-        margin: 0;
-      }
-      
-      &::placeholder {
-        color: rgba(#fff, .25);
-      }
-    }
-
     .link--password-lost {
       margin: 12px 0 0;
       align-self: flex-end;
+    }
+
+    .input-field:last-of-type {
+      margin: 0;
     }
 
     button {
