@@ -7,8 +7,6 @@ A simple display of how many overtime I currently have, by simply parsing all en
 npm install
 ```
 
-Be sure to activate an environment variable named VUE_APP_API_KEY holding the Toggl API key.
-
 ### Compiles and hot-reloads for development
 ```
 npm run serve
