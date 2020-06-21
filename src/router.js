@@ -1,7 +1,5 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Dashboard from '@/views/Dashboard.vue'
-
 Vue.use(VueRouter)
 
 import auth from '@/plugins/GotrueAuth'
@@ -10,14 +8,10 @@ import MainAppView from '@/components/views/MainAppView'
 
 import { providers } from '@/config'
 
-const routes = [
-  {
-    path: '/timer',
-    name: 'Timer',
-    component: () => import('@/views/Timer.vue'),
-    meta: { title: 'Timer', requiresAuth: true }
-  },
+import TimerView from '@/views/Timer.vue'
 
+
+const routes = [
   {
     path: '/',
     component: MainAppView,
@@ -25,8 +19,8 @@ const routes = [
       {
         path: '/',
         name: 'Dashboard',
-        component: Dashboard,
-        meta: { title: 'Dashboard', requiresAuth: true }
+        component: TimerView,
+        meta: { title: 'Timer', requiresAuth: true }
       },
 
       {

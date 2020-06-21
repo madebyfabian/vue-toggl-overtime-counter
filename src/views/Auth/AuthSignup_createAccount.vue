@@ -115,7 +115,7 @@
           this.$store.temp = null
 
           // Now redirect to timer.
-          this.$router.push({ name: 'Timer' })
+          this.$router.push({ name: 'Dashboard' })
           
         } catch (error) {
           console.error(error)
