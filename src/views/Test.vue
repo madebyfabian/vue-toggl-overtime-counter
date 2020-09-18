@@ -17,8 +17,8 @@
       //     subdomain: 'madebyfabian'
       //   },
       //   params: { 
-      //     email: 'hello@madebyfabian.com', 
-      //     password: 'V6F06DJCRK8x8c%'
+      //     email: '' 
+      //     password: ''
       //   },
       //   debug: true
       // }))
