@@ -13,6 +13,11 @@ import TimerView from '@/views/Timer.vue'
 
 const routes = [
   {
+    path: '/test',
+    component: () => import('@/views/Test.vue')
+  },
+
+  {
     path: '/',
     component: MainAppView,
     children: [
