@@ -32,8 +32,8 @@
       console.log('togglAuth', await makeRequest('/me', {
         provider: 'toggl',
         params: {
-          email: 'beer.fabian@mail.de',
-          password: '$Z3%4ufUw8H&'
+          email: '',
+          password: ''
         },
         debug: true
       }))
