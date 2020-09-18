@@ -30,7 +30,7 @@
     <div v-else>
       <transition name="slide">
         <AlertBox icon="📧" type="info" v-if="signupStatus === 'awaitingVerify'">
-          Vielen Dank! Du hast soeben eine Bestätigungs-Code per E-Mail erhalten.
+          Vielen Dank! Du hast soeben einen Bestätigungs-Code per E-Mail erhalten.
         </AlertBox>
         <AlertBox icon="❌" type="error" v-if="signupStatus === 'verifyFailed'">
           Fehler bei der Verifizierung des Bestätigungs-Codes. <br><br>
