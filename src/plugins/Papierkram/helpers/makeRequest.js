@@ -18,19 +18,16 @@ export default async ( path, options ) => {
           body          = options?.body,
           queries       = options?.query
 
-    let subdomain = options?.subdomain
-    if (!subdomain) {
-      // Try to get subdomain from current user
-      // @TEMP:
-      throw new Error('@TEMP: Please provide a subdomain for now! (will fix this later)')
-    }
+    let subdomain = options?.subdomain || getUserData()?.subdomain
+    if (!subdomain) 
+      throw new Error('The subdomain was not passed via options neither it could be found in the current users config.')
 
     // Generate URL
     let url = `https://cors-everywhere.madebyfabian.workers.dev?https://${subdomain}.papierkram.de/api/v1${path}`
     let urlQueries = queries || {}
     
     if (requiresAuth) {
-      const { authToken } = getCredentials()
+      const authToken = getUserData()?.authToken
       if (!authToken)
         throw new Error('papierkramApiCredentials not found in the user_metadata!')
   
@@ -47,7 +44,7 @@ export default async ( path, options ) => {
   
     const res = await fetch( url, fetchOptions )
     if (!res.ok) 
-      throw new Error('Error with the Request: ' + await res.text())
+      throw new Error('Error with the request. Response is: ' + await res.text())
 
     return await res.json()
   } catch (error) {
@@ -56,13 +53,10 @@ export default async ( path, options ) => {
 }
 
 
-const getCredentials = () => {
-  const { user_metadata: data } = auth.currentUser()
 
-  const authToken = data?.papierkramApiCredentials?.authToken,
-        realtimeToken = data?.papierkramApiCredentials?.realtimeToken,
-        subdomain = data?.papierkramApiCredentials?.subdomain
-
-  if (!!(authToken && realtimeToken && subdomain))
-    return { authToken, realtimeToken, subdomain }
+/**
+ * @returns {{ authToken: string, subdomain: string }}
+ */
+const getUserData = () => {
+  return auth.currentUser()?.user_metadata?.data?.providers?.papierkram
 }

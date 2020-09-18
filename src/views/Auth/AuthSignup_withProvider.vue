@@ -72,6 +72,15 @@
         this.$router.push({ name: 'AuthSignup' })
       
       this.provider = provider
+
+
+      // Only DEV
+      // const fillUserDataDEV = {
+      //   email: process.env?.[`VUE_APP_AUTH_SIGNUP_${this.provider.name.toUpperCase()}_FILL_EMAIL`] || '',
+      //   password: process.env?.[`VUE_APP_AUTH_SIGNUP_${this.provider.name.toUpperCase()}_FILL_PASSWORD`] || '',
+      //   papierkram__subdomain: process.env?.[`VUE_APP_AUTH_SIGNUP_${this.provider.name.toUpperCase()}_FILL_SUBDOMAIN`] || '',
+      // }
+      // this.user = fillUserDataDEV
     },
 
     methods: {

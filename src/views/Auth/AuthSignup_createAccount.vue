@@ -88,7 +88,10 @@
 
           // Create account
           await auth.signup(this.user.email, this.user.password, { 
-            full_name: this.user.name
+            full_name: this.user.name,
+            data: {
+              providers: this.$store.temp.providers
+            }
           })
 
           this.signupStatus = 'awaitingVerify'

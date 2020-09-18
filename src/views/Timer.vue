@@ -107,6 +107,7 @@
     },
 
     async created() {
+      console.log(auth.currentUser().user_metadata.data.providers)
       const dataFromAPI = await this.collectDataFromAPI()
       if (!dataFromAPI)
         return
@@ -121,14 +122,9 @@
 
         return { ...entryGroup, entries, completeDuration }
       })
-
-      // const groupedProjects = PapierkramHelpers.groupProjectsByCustomer(projects)
     },
 
     methods: {
-      /**
-       * Get projects
-       */
       async collectDataFromAPI() {
         const dataFromAPI = {
           projects: await Papierkram.getProjects() || null,
@@ -142,20 +138,6 @@
         return dataFromAPI
       },
 
-      /**
-       * Get tracker entries and loop through entries to sort them by date
-       */
-      // async getTrackerEntriesFromAPI( ) {
-      //   const trackerEntries = await Papierkram.getTrackerEntries()
-      //   if (trackerEntries) {
-          
-      //   }
-      // },
-
-
-      onInput() {
-        console.log('onINput')
-      },
       clickedStart() {
         this.timer.isRunning = true
         this.interval = setInterval(() => {

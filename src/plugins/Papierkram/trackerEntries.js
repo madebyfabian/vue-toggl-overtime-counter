@@ -7,31 +7,27 @@ import dayjs from '@/plugins/Dayjs'
  * Get a list of the last tracker entries.
  */
 export const getTrackerEntries = async ( options = { groupEntriesByDate: false } ) => {
-  try {
-    const trackerEntries = await makeRequest('/tracker/time_entries', { requiresAuth: true })
-    if (!trackerEntries)
-      throw new Error()
+  const trackerEntries = await makeRequest('/tracker/time_entries', { requiresAuth: true })
+  if (!trackerEntries)
+    throw new Error()
 
-    let entries = []
-    for (let entry of trackerEntries) {
-      entry = PapierkramHelpers.formatTrackerEntry(entry)
+  let entries = []
+  for (let entry of trackerEntries) {
+    entry = PapierkramHelpers.formatTrackerEntry(entry)
 
-      if (!options?.groupEntriesByDate)
-        entries.push(entry)
-      else {
-        const entryDate = dayjs(entry.startedAt).format('YYYY-MM-DD')
-        const entryIndex = entries.findIndex(entry => entry.date === entryDate)
-        if (entryIndex == -1) // not found
-          entries.push({ date: entryDate, entries: [ entry ] })
-        else
-          entries[entryIndex].entries.push(entry)
-      }
+    if (!options?.groupEntriesByDate)
+      entries.push(entry)
+    else {
+      const entryDate = dayjs(entry.startedAt).format('YYYY-MM-DD')
+      const entryIndex = entries.findIndex(entry => entry.date === entryDate)
+      if (entryIndex == -1) // not found
+        entries.push({ date: entryDate, entries: [ entry ] })
+      else
+        entries[entryIndex].entries.push(entry)
     }
-
-    return entries
-  } catch (error) {
-    console.error('Something is wrong with the API Response', error)
   }
+
+  return entries
 }
 
 

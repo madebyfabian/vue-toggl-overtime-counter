@@ -1,5 +1,4 @@
 import makeRequest from '@/plugins/Papierkram/helpers/makeRequest'
-import auth from '@/plugins/GotrueAuth'
 
 
 /**
@@ -10,29 +9,16 @@ import auth from '@/plugins/GotrueAuth'
  * @param {string} password The user's password.
  */
 export const authenticate = async ( subdomain, email, password ) => {
-  try {
-    const authData = await makeRequest('/auth', {
-      method: 'POST',
-      subdomain,
-      body: { email, password }
-    })
+  const authData = await makeRequest('/auth', {
+    method: 'POST',
+    subdomain,
+    body: { email, password }
+  })
 
-    // await auth.currentUser().update({ 
-    //   data: { papierkramApiCredentials: { 
-    //       authToken: authData.token, 
-    //       realtimeToken: authData.realtime_token, 
-    //       subdomain: authData.tenant_subdomain
-    //   } }
-    // })
-
-    return {
-      authToken: authData.token,
-      realtimeToken: authData.realtime_token,
-      name: authData.user_name,
-      subdomain: authData.tenant_subdomain
-    }
-
-  } catch (error) {
-    console.error(error)
+  return {
+    authToken: authData.token,
+    realtimeToken: authData.realtime_token,
+    name: authData.user_name,
+    subdomain: authData.tenant_subdomain
   }
 }
