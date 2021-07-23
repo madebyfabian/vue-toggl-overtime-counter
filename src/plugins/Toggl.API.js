@@ -1,8 +1,8 @@
 import auth from '@/plugins/GotrueAuth'
 
 const config = { 
-  baseUrl: 'https://cors-everywhere.madebyfabian.workers.dev?https://api.track.toggl.com/api/v8',
-  baseUrlReportsAPI: 'https://cors-everywhere.madebyfabian.workers.dev?https://api.track.toggl.com/reports/api/v2'
+  baseUrl: 'https://cors-anywhere-madebyfabian.herokuapp.com/https://api.track.toggl.com/api/v8',
+  baseUrlReportsAPI: 'https://cors-anywhere-madebyfabian.herokuapp.com/https://api.track.toggl.com/reports/api/v2'
 }
 
 

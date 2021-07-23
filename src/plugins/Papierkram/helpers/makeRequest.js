@@ -23,7 +23,7 @@ export default async ( path, options ) => {
       throw new Error('The subdomain was not passed via options neither it could be found in the current users config.')
 
     // Generate URL
-    let url = `https://cors-everywhere.madebyfabian.workers.dev?https://${subdomain}.papierkram.de/api/v1${path}`
+    let url = `https://cors-anywhere-madebyfabian.herokuapp.com/https://${subdomain}.papierkram.de/api/v1${path}`
     let urlQueries = queries || {}
     
     if (requiresAuth) {
