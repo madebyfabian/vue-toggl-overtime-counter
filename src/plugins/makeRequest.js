@@ -1,7 +1,7 @@
 import auth from '@/plugins/GotrueAuth'
 
 const _config = {
-	proxyUrl: 'https://cors-anywhere-madebyfabian.up.railway.app',
+	proxyUrl: 'https://cors-anywhere.madebyfabian.com',
 	providers: {
 		papierkram: {
 			baseUrl: 'https://{{subdomain}}.papierkram.de/api/v1',

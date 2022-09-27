@@ -2,9 +2,9 @@ import auth from '@/plugins/GotrueAuth'
 
 const config = {
 	baseUrl:
-		'https://cors-anywhere-madebyfabian.up.railway.app/https://api.track.toggl.com/api/v8',
+		'https://cors-anywhere.madebyfabian.com/https://api.track.toggl.com/api/v8',
 	baseUrlReportsAPI:
-		'https://cors-anywhere-madebyfabian.up.railway.app/https://api.track.toggl.com/reports/api/v2',
+		'https://cors-anywhere.madebyfabian.com/https://api.track.toggl.com/reports/api/v2',
 }
 
 /**
@@ -99,7 +99,6 @@ export default class TogglAPI {
 				const workspaceId = user?.user_metadata?.trackedWorkspace
 				if (!workspaceId)
 					throw new Error('No workspace ID defined by the user.')
-
 				;(params.user_agent = 'https://github.com/madebyfabian/overtimetrackr'),
 					(params.project_ids = trackedProjects.join())
 				params.workspace_id = workspaceId

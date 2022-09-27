@@ -24,7 +24,7 @@ export default async (path, options) => {
 			)
 
 		// Generate URL
-		let url = `https://cors-anywhere-madebyfabian.up.railway.app/https://${subdomain}.papierkram.de/api/v1${path}`
+		let url = `https://cors-anywhere.madebyfabian.com/https://${subdomain}.papierkram.de/api/v1${path}`
 		let urlQueries = queries || {}
 
 		if (requiresAuth) {
